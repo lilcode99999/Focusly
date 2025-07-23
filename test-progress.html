@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Progress Tracking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Progress Tracking Test</h1>
+  
+  <div class="test-section">
+    <h2>Current Progress</h2>
+    <button id="checkProgress">Check Current Progress</button>
+    <button id="simulateComplete">Simulate Session Complete (25min)</button>
+    <button id="simulateShort">Simulate Short Session (5min)</button>
+    <button id="resetProgress">Reset Daily Progress</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Notifications</h2>
+    <button id="checkNotifications">Check Notifications</button>
+    <button id="addTestNotification">Add Test Notification</button>
+    <button id="clearNotifications">Clear All Notifications</button>
+  </div>
+  
+  <div id="log" class="log"></div>
+  
+  <script>
+    function log(message) {
+      const logEl = document.getElementById('log');
+      logEl.textContent = message + '\n' + logEl.textContent;
+    }
+    
+    // Check current progress
+    document.getElementById('checkProgress').addEventListener('click', async () => {
+      const data = await chrome.storage.local.get(['userData', 'lastActiveDate']);
+      log('Current Progress:');
+      if (data.userData) {
+        log(`- Today's Focus Time: ${data.userData.todayFocusTime || 0} minutes`);
+        log(`- Completed Sessions: ${data.userData.completedSessions || 0}`);
+        log(`- Daily Goal Type: ${data.userData.dailyGoalType || 'time'}`);
+        log(`- Daily Goal Minutes: ${data.userData.dailyGoalMinutes || 120}`);
+        log(`- Goal Streak: ${data.userData.goalStreak || 0} days`);
+      } else {
+        log('No user data found');
+      }
+      log(`Last Active Date: ${data.lastActiveDate || 'Never'}`);
+      log('---');
+    });
+    
+    // Simulate session complete
+    document.getElementById('simulateComplete').addEventListener('click', async () => {
+      log('Simulating 25-minute focus session completion...');
+      await chrome.runtime.sendMessage({
+        action: 'updateDailyProgress',
+        minutes: 25
+      });
+      log('Progress update sent. Check progress to see changes.');
+    });
+    
+    // Simulate short session
+    document.getElementById('simulateShort').addEventListener('click', async () => {
+      log('Simulating 5-minute focus session completion...');
+      await chrome.runtime.sendMessage({
+        action: 'updateDailyProgress',
+        minutes: 5
+      });
+      log('Progress update sent. Check progress to see changes.');
+    });
+    
+    // Reset progress
+    document.getElementById('resetProgress').addEventListener('click', async () => {
+      const userData = {
+        todayFocusTime: 0,
+        completedSessions: 0,
+        dailyGoalType: 'time',
+        dailyGoalMinutes: 120,
+        dailyGoalSessions: 4,
+        goalStreak: 0,
+        lastGoalDate: null
+      };
+      await chrome.storage.local.set({ userData, lastActiveDate: new Date().toDateString() });
+      log('Daily progress reset to 0');
+    });
+    
+    // Check notifications
+    document.getElementById('checkNotifications').addEventListener('click', async () => {
+      const data = await chrome.storage.local.get('notifications');
+      const notifications = data.notifications || [];
+      log(`Total notifications: ${notifications.length}`);
+      log(`Unread notifications: ${notifications.filter(n => n.unread).length}`);
+      notifications.slice(0, 5).forEach(n => {
+        log(`- ${n.title}: ${n.message} (${n.unread ? 'unread' : 'read'})`);
+      });
+      log('---');
+    });
+    
+    // Add test notification
+    document.getElementById('addTestNotification').addEventListener('click', async () => {
+      const { notifications = [] } = await chrome.storage.local.get('notifications');
+      const newNotif = {
+        id: Date.now().toString(),
+        title: '🎯 Test Notification',
+        message: `Test message at ${new Date().toLocaleTimeString()}`,
+        timestamp: Date.now(),
+        unread: true
+      };
+      await chrome.storage.local.set({ 
+        notifications: [newNotif, ...notifications].slice(0, 20) 
+      });
+      log('Test notification added');
+    });
+    
+    // Clear notifications
+    document.getElementById('clearNotifications').addEventListener('click', async () => {
+      await chrome.storage.local.set({ notifications: [] });
+      log('All notifications cleared');
+    });
+    
+    log('Test page loaded. Use buttons to test progress tracking.');
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle -->
+  <circle cx="64" cy="64" r="56" stroke="#007AFF" stroke-width="8" fill="none"/>
+  
+  <!-- Inner circle (focus point) -->
+  <circle cx="64" cy="64" r="24" fill="#007AFF"/>
+  
+  <!-- Focus lines -->
+  <path d="M64 8 L64 24" stroke="#007AFF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M64 104 L64 120" stroke="#007AFF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M8 64 L24 64" stroke="#007AFF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M104 64 L120 64" stroke="#007AFF" stroke-width="4" stroke-linecap="round"/>
+</svg>

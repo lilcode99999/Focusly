@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Signing in... - Smart Bookmarks</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+    }
+
+    .callback-container {
+      text-align: center;
+      padding: 48px;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid #e0e0e0;
+      border-top: 3px solid #4A90E2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+      color: #666;
+    }
+
+    .error {
+      display: none;
+      background: #FEE;
+      color: #E74C3C;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 24px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="callback-container">
+    <div class="spinner"></div>
+    <h1>Completing sign in...</h1>
+    <p>Please wait while we authenticate your account.</p>
+    <div class="error" id="errorMessage"></div>
+  </div>
+
+  <script>
+    // Handle OAuth callback
+    async function handleCallback() {
+      try {
+        // Get the URL hash parameters
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const error = hashParams.get('error');
+        const errorDescription = hashParams.get('error_description');
+
+        if (error) {
+          throw new Error(errorDescription || error);
+        }
+
+        if (!accessToken) {
+          throw new Error('No access token received');
+        }
+
+        // Send tokens to background script
+        const response = await chrome.runtime.sendMessage({
+          action: 'oauthCallback',
+          accessToken,
+          refreshToken
+        });
+
+        if (response && response.success) {
+          // Success! Close tab and open extension
+          setTimeout(() => {
+            chrome.action.openPopup();
+            window.close();
+          }, 1000);
+        } else {
+          throw new Error(response?.error || 'Failed to process authentication');
+        }
+      } catch (error) {
+        console.error('OAuth callback error:', error);
+        const errorEl = document.getElementById('errorMessage');
+        errorEl.textContent = `Error: ${error.message}`;
+        errorEl.style.display = 'block';
+        
+        // Close tab after showing error
+        setTimeout(() => {
+          window.close();
+        }, 3000);
+      }
+    }
+
+    // Handle callback on load
+    handleCallback();
+  </script>
+</body>
+</html>

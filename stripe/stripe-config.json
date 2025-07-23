@@ -1,0 +1,16 @@
+{
+  "products": {
+    "pro": {
+      "productId": "prod_SeTI6jUJsKWDo9",
+      "priceId": "price_1RjALzGb2rFMogEtnnQrb24r",
+      "amount": 999,
+      "interval": "month"
+    },
+    "teams": {
+      "productId": "prod_SeTIMUuKxaG1Nt",
+      "priceId": "price_1RjAM0Gb2rFMogEtqGhozSCg",
+      "amount": 1999,
+      "interval": "month"
+    }
+  }
+}

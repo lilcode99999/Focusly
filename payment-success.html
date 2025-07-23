@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Payment Successful - Smart Bookmarks Pro</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .success-container {
+      background: white;
+      border-radius: 16px;
+      padding: 48px;
+      text-align: center;
+      max-width: 480px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: #34C759;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scaleIn 0.5s ease-out 0.2s both;
+    }
+
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: white;
+      stroke-width: 3;
+      animation: checkmark 0.5s ease-out 0.5s both;
+    }
+
+    h1 {
+      margin: 0 0 16px 0;
+      font-size: 32px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    p {
+      margin: 0 0 32px 0;
+      font-size: 18px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .features-unlocked {
+      background: #F8F9FA;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .features-unlocked h3 {
+      margin: 0 0 16px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .features-unlocked ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .features-unlocked li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: #444;
+    }
+
+    .features-unlocked li:last-child {
+      margin-bottom: 0;
+    }
+
+    .check {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      color: #34C759;
+      flex-shrink: 0;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: #4A90E2;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #357ABD;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn-secondary {
+      background: #F0F0F0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #E0E0E0;
+    }
+
+    .loading {
+      display: none;
+      color: #666;
+      font-size: 16px;
+      margin: 20px 0;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #4A90E2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes checkmark {
+      from {
+        stroke-dasharray: 50;
+        stroke-dashoffset: 50;
+      }
+      to {
+        stroke-dasharray: 50;
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    
+    <h1>Welcome to Pro!</h1>
+    <p>Your payment was successful and your Pro features are now active.</p>
+    
+    <div class="features-unlocked">
+      <h3>Features Unlocked:</h3>
+      <ul>
+        <li>
+          <svg class="check" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          Unlimited bookmarks (no more 100 limit)
+        </li>
+        <li>
+          <svg class="check" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          AI-powered semantic search
+        </li>
+        <li>
+          <svg class="check" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          Unlimited body doubling sessions
+        </li>
+        <li>
+          <svg class="check" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          All integrations and priority support
+        </li>
+      </ul>
+    </div>
+    
+    <div class="loading" id="loadingMessage">
+      <span class="spinner"></span>
+      Activating your Pro features...
+    </div>
+    
+    <div class="action-buttons">
+      <button class="btn btn-primary" id="openExtension">
+        Open Smart Bookmarks
+      </button>
+      <a href="https://billing.stripe.com/p/login/test_00g000000000000" class="btn btn-secondary" target="_blank">
+        Manage Subscription
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Check subscription status
+    async function checkSubscriptionStatus() {
+      const loadingEl = document.getElementById('loadingMessage');
+      loadingEl.style.display = 'block';
+      
+      // Wait a moment for webhook to process
+      setTimeout(() => {
+        loadingEl.style.display = 'none';
+        
+        // Send message to background script
+        chrome.runtime.sendMessage({
+          action: 'checkSubscriptionUpdate'
+        });
+      }, 3000);
+    }
+
+    // Open extension button
+    document.getElementById('openExtension').addEventListener('click', () => {
+      // Close this tab and open extension
+      chrome.action.openPopup();
+      window.close();
+    });
+
+    // Check status on load
+    checkSubscriptionStatus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <title>Smart Bookmarks Settings</title>
+  <style>
+    :root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #f8f9fa;
+      --tertiary-bg: #f1f3f4;
+      --surface-bg: #ffffff;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --divider-color: rgba(0, 0, 0, 0.06);
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #a1a1a6;
+      --accent-color: #007aff;
+      --accent-hover: #0051d5;
+      --success-color: #34c759;
+      --warning-color: #ff9500;
+      --error-color: #ff3b30;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --radius-small: 6px;
+      --radius-medium: 8px;
+      --radius-large: 12px;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 12px;
+      --spacing-lg: 16px;
+      --spacing-xl: 20px;
+      --spacing-2xl: 24px;
+      --spacing-3xl: 32px;
+      --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      --font-size-xs: 11px;
+      --font-size-sm: 13px;
+      --font-size-md: 15px;
+      --font-size-lg: 17px;
+      --font-size-xl: 20px;
+      --font-size-2xl: 24px;
+      --transition-fast: 0.15s ease-out;
+      --transition-medium: 0.25s ease-out;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary-bg: #000000;
+        --secondary-bg: #1c1c1e;
+        --tertiary-bg: #2c2c2e;
+        --surface-bg: #1c1c1e;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --divider-color: rgba(255, 255, 255, 0.06);
+        --text-primary: #ffffff;
+        --text-secondary: #a1a1a6;
+        --text-tertiary: #6d6d70;
+        --accent-color: #0a84ff;
+        --accent-hover: #409cff;
+      }
+    }
+
+    [data-theme="dark"] {
+      --primary-bg: #000000;
+      --secondary-bg: #1c1c1e;
+      --tertiary-bg: #2c2c2e;
+      --surface-bg: #1c1c1e;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --divider-color: rgba(255, 255, 255, 0.06);
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1a6;
+      --text-tertiary: #6d6d70;
+      --accent-color: #0a84ff;
+      --accent-hover: #409cff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-system);
+      font-size: var(--font-size-md);
+      line-height: 1.5;
+      background: var(--primary-bg);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--spacing-3xl);
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: var(--spacing-3xl);
+      text-align: center;
+    }
+
+    .header-title {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+      letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: var(--secondary-bg);
+      border-radius: var(--radius-medium);
+      padding: var(--spacing-xs);
+      margin-bottom: var(--spacing-3xl);
+      border: 1px solid var(--border-color);
+    }
+
+    .nav-tab {
+      flex: 1;
+      text-align: center;
+      padding: var(--spacing-md) var(--spacing-lg);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: var(--radius-small);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      background: none;
+    }
+
+    .nav-tab.active {
+      background: var(--accent-color);
+      color: white;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .nav-tab:hover:not(.active) {
+      background: var(--tertiary-bg);
+      color: var(--text-primary);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Settings Groups */
+    .settings-group {
+      background: var(--surface-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-large);
+      padding: var(--spacing-2xl);
+      margin-bottom: var(--spacing-2xl);
+    }
+
+    .settings-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .group-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .group-description {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    /* Setting Items */
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-lg) 0;
+      border-bottom: 1px solid var(--divider-color);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .setting-item:first-child {
+      padding-top: 0;
+    }
+
+    .setting-info {
+      flex: 1;
+      margin-right: var(--spacing-lg);
+    }
+
+    .setting-label {
+      font-size: var(--font-size-md);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .setting-description {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      background: var(--tertiary-bg);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background-color var(--transition-fast);
+      border: none;
+      outline: none;
+    }
+
+    .toggle-switch.active {
+      background: var(--accent-color);
+    }
+
+    .toggle-switch::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: transform var(--transition-fast);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .toggle-switch.active::before {
+      transform: translateX(20px);
+    }
+
+    /* Select and Input */
+    .form-select,
+    .form-input {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-small);
+      background: var(--surface-bg);
+      color: var(--text-primary);
+      font-family: var(--font-system);
+      font-size: var(--font-size-sm);
+      min-width: 120px;
+      transition: border-color var(--transition-fast);
+    }
+
+    .form-select:focus,
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    /* Pro Badge */
+    .pro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+      color: white;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      border-radius: var(--spacing-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pro-badge::before {
+      content: '✨';
+      font-size: 10px;
+    }
+
+    /* Disabled State */
+    .setting-item.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .setting-item.disabled .setting-label::after {
+      content: '';
+      margin-left: var(--spacing-sm);
+    }
+
+    /* Upgrade Section */
+    .upgrade-section {
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+      color: white;
+      border-radius: var(--radius-large);
+      padding: var(--spacing-2xl);
+      margin-bottom: var(--spacing-2xl);
+      text-align: center;
+    }
+
+    .upgrade-title {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .upgrade-description {
+      font-size: var(--font-size-md);
+      margin-bottom: var(--spacing-xl);
+      opacity: 0.9;
+    }
+
+    .upgrade-btn {
+      background: white;
+      color: var(--accent-color);
+      border: none;
+      padding: var(--spacing-md) var(--spacing-2xl);
+      border-radius: var(--radius-medium);
+      font-family: var(--font-system);
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .upgrade-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Blocked Sites List */
+    .blocked-sites-list {
+      background: var(--tertiary-bg);
+      border-radius: var(--radius-medium);
+      padding: var(--spacing-lg);
+      margin-top: var(--spacing-md);
+    }
+
+    .blocked-site-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-sm) 0;
+      border-bottom: 1px solid var(--divider-color);
+    }
+
+    .blocked-site-item:last-child {
+      border-bottom: none;
+    }
+
+    .blocked-site-url {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+
+    .blocked-site-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      margin-left: var(--spacing-sm);
+    }
+
+    .remove-site-btn {
+      padding: var(--spacing-xs);
+      border: none;
+      background: transparent;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      border-radius: var(--radius-small);
+      transition: all var(--transition-fast);
+    }
+
+    .remove-site-btn:hover {
+      background: var(--error-color);
+      color: white;
+    }
+
+    /* Add Site Form */
+    .add-site-form {
+      display: flex;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .add-site-input {
+      flex: 1;
+    }
+
+    .add-site-btn {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: var(--radius-small);
+      font-family: var(--font-system);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color var(--transition-fast);
+    }
+
+    .add-site-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Focus states */
+    .nav-tab:focus,
+    .toggle-switch:focus,
+    .upgrade-btn:focus {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+    }
+
+    /* Analytics Dashboard */
+    .analytics-dashboard {
+      margin-top: var(--spacing-lg);
+    }
+
+    .analytics-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-2xl);
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .analytics-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .stat-card {
+      background: var(--tertiary-bg);
+      border-radius: var(--radius-medium);
+      padding: var(--spacing-lg);
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .stat-value {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .stat-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .insights-section {
+      margin-top: var(--spacing-xl);
+    }
+
+    .insights-title {
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .insight-card {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg);
+      background: var(--surface-bg);
+      border-radius: var(--radius-medium);
+      border: 1px solid var(--border-color);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .insight-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .insight-icon {
+      font-size: var(--font-size-lg);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .insight-content {
+      flex: 1;
+    }
+
+    .insight-title {
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .insight-message {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .insight-card.success {
+      background: linear-gradient(135deg, rgba(52, 199, 89, 0.1), rgba(52, 199, 89, 0.05));
+      border-color: rgba(52, 199, 89, 0.3);
+    }
+
+    .insight-card.adhd {
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(0, 122, 255, 0.05));
+      border-color: rgba(0, 122, 255, 0.3);
+    }
+
+    .insight-card.achievement {
+      background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(255, 149, 0, 0.05));
+      border-color: rgba(255, 149, 0, 0.3);
+    }
+
+    .empty-analytics {
+      text-align: center;
+      padding: var(--spacing-3xl) var(--spacing-lg);
+      color: var(--text-secondary);
+    }
+
+    .empty-analytics-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-primary);
+    }
+
+    .empty-analytics-subtitle {
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .start-focus-btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-radius: var(--radius-medium);
+      font-family: var(--font-system);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .start-focus-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+    
+    /* Upgrade Modal */
+    .upgrade-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity var(--transition-medium);
+    }
+    
+    .upgrade-modal.show {
+      opacity: 1;
+    }
+    
+    .upgrade-modal .modal-content {
+      background: var(--surface-bg);
+      border-radius: var(--radius-large);
+      padding: var(--spacing-2xl);
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+      box-shadow: var(--shadow-large);
+    }
+    
+    .upgrade-modal h2 {
+      margin: 0 0 var(--spacing-xl) 0;
+      text-align: center;
+      color: var(--text-primary);
+    }
+    
+    .tier-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+      align-items: stretch;
+    }
+    
+    .tier-option {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-medium);
+      padding: var(--spacing-lg);
+      text-align: center;
+      transition: all var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .tier-option.featured {
+      border-color: var(--accent-color);
+      position: relative;
+    }
+    
+    .tier-option.featured::before {
+      content: 'RECOMMENDED';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-color);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    .tier-option-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .tier-option h3 {
+      margin: 0 0 var(--spacing-sm) 0;
+      color: var(--text-primary);
+    }
+    
+    .tier-option .price {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .tier-option ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 var(--spacing-lg) 0;
+      text-align: left;
+      flex: 1;
+      min-height: 120px;
+    }
+    
+    .tier-option li {
+      padding: var(--spacing-xs) 0;
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+    }
+    
+    .tier-option li::before {
+      content: '✓';
+      color: var(--success-color);
+      margin-right: var(--spacing-sm);
+    }
+    
+    .tier-btn {
+      width: 100%;
+      padding: var(--spacing-md);
+      border: 2px solid var(--accent-color);
+      background: transparent;
+      color: var(--accent-color);
+      border-radius: var(--radius-small);
+      font-family: var(--font-system);
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .tier-btn.primary {
+      background: var(--accent-color);
+      color: white;
+    }
+    
+    .tier-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all var(--transition-fast);
+    }
+    
+    .modal-close:hover {
+      background: var(--secondary-bg);
+      color: var(--text-primary);
+    }
+    
+    /* Account Tab Styles */
+    .account-info {
+      background: var(--secondary-bg);
+      border-radius: var(--radius-medium);
+      padding: var(--spacing-xl);
+    }
+    
+    .account-detail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-md) 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .account-detail:last-of-type {
+      border-bottom: none;
+    }
+    
+    .account-detail label {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    
+    .pro-status {
+      color: var(--success-color);
+      font-weight: 600;
+    }
+    
+    .free-status {
+      color: var(--text-secondary);
+    }
+    
+    .account-actions {
+      margin-top: var(--spacing-xl);
+      text-align: center;
+    }
+    
+    .btn-primary, .btn-secondary {
+      padding: var(--spacing-md) var(--spacing-xl);
+      border: none;
+      border-radius: var(--radius-medium);
+      font-family: var(--font-system);
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .btn-primary {
+      background: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+    
+    .btn-secondary {
+      background: var(--tertiary-bg);
+      color: var(--text-primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--secondary-bg);
+    }
+    
+    .loading-spinner {
+      text-align: center;
+      color: var(--text-secondary);
+      padding: var(--spacing-xl);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="header-title">Smart Bookmarks Settings</h1>
+      <p class="header-subtitle">Customize your AI-powered productivity experience</p>
+    </header>
+
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="general">General</button>
+      <button class="nav-tab" data-tab="account">Account</button>
+      <button class="nav-tab" data-tab="time-tracking">Time Tracking</button>
+      <button class="nav-tab" data-tab="blocking">Site Blocking</button>
+      <button class="nav-tab" data-tab="accessibility">Accessibility</button>
+      <button class="nav-tab" data-tab="advanced">Advanced</button>
+    </nav>
+
+    <!-- General Tab -->
+    <div class="tab-content active" id="general">
+      <div class="settings-group">
+        <h2 class="group-title">Appearance</h2>
+        <p class="group-description">Customize the look and feel of Smart Bookmarks</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Theme</div>
+            <div class="setting-description">Choose your preferred theme</div>
+          </div>
+          <select class="form-select" id="themeSelect">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Compact Mode</div>
+            <div class="setting-description">Show more bookmarks in less space</div>
+          </div>
+          <button class="toggle-switch" id="compactMode"></button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Search & AI</h2>
+        <p class="group-description">Configure AI-powered search behavior</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Default Search Mode</div>
+            <div class="setting-description">Which search mode to use by default</div>
+          </div>
+          <select class="form-select" id="defaultSearchMode">
+            <option value="semantic">Semantic AI</option>
+            <option value="keyword">Keyword</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Auto-categorize Bookmarks <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">Automatically organize bookmarks with AI</div>
+          </div>
+          <button class="toggle-switch" id="autoCategorizeBM"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Smart Recommendations <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">Show related bookmarks based on current page</div>
+          </div>
+          <button class="toggle-switch" id="smartRecommendations"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Tab -->
+    <div class="tab-content" id="account">
+      <div class="settings-group">
+        <h2 class="group-title">Account & Subscription</h2>
+        <p class="group-description">Manage your Smart Bookmarks account and subscription</p>
+        
+        <div class="account-status" id="accountStatus">
+          <div class="loading-spinner">Loading account information...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Time Tracking Tab -->
+    <div class="tab-content" id="time-tracking">
+      <div class="upgrade-section">
+        <h2 class="upgrade-title">Unlock Time Tracking</h2>
+        <p class="upgrade-description">Get detailed insights into your browsing habits and productivity patterns with Pro tier</p>
+        <button class="upgrade-btn" id="upgradeToProBtn">Upgrade to Pro - $9.99/month</button>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Time Tracking</h2>
+        <p class="group-description">Monitor your browsing time and productivity patterns</p>
+        
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <div class="setting-label">Enable Time Tracking <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">Track time spent on websites</div>
+          </div>
+          <button class="toggle-switch" id="enableTimeTracking"></button>
+        </div>
+
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <div class="setting-label">Idle Detection Sensitivity <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">How long before considering you idle</div>
+          </div>
+          <select class="form-select" id="idleDetection">
+            <option value="30">30 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="120">2 minutes</option>
+            <option value="300">5 minutes</option>
+          </select>
+        </div>
+
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <div class="setting-label">Productivity Notifications <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">Get insights about your productivity patterns</div>
+          </div>
+          <button class="toggle-switch" id="productivityNotifications"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Analytics Dashboard <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">View detailed time tracking and productivity insights</div>
+          </div>
+          <button class="form-select" id="viewAnalyticsBtn">View Dashboard</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Focus Analytics</h2>
+        <p class="group-description">Track your focus patterns and productivity insights</p>
+        
+        <div class="analytics-dashboard" id="analyticsDashboard">
+          <div class="analytics-loading">
+            <div class="loading-spinner"></div>
+            Loading your focus analytics...
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Focus Timer</h2>
+        <p class="group-description">Pomodoro timer settings and focus session preferences</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Default Timer Duration</div>
+            <div class="setting-description">Length of focus sessions (shorter durations recommended for ADHD)</div>
+          </div>
+          <select class="form-select" id="timerDuration">
+            <option value="10">10 minutes (ADHD-friendly)</option>
+            <option value="15">15 minutes (Short focus)</option>
+            <option value="20">20 minutes (ADHD-optimal)</option>
+            <option value="25">25 minutes (Classic Pomodoro)</option>
+            <option value="30">30 minutes</option>
+            <option value="45">45 minutes (Extended focus)</option>
+            <option value="60">60 minutes (Deep work)</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Timer Notifications</div>
+            <div class="setting-description">Show completion notifications</div>
+          </div>
+          <button class="toggle-switch active" id="timerNotifications"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Site Blocking Tab -->
+    <div class="tab-content" id="blocking">
+      <div class="settings-group">
+        <h2 class="group-title">Blocked Sites</h2>
+        <p class="group-description">Manage sites that are blocked during focus sessions</p>
+        
+        <div class="add-site-form">
+          <input type="text" class="form-input add-site-input" placeholder="Enter website URL (e.g., youtube.com)" id="newSiteInput">
+          <button class="add-site-btn" id="addSiteBtn">Add Site</button>
+        </div>
+
+        <div class="blocked-sites-list" id="blockedSitesList">
+          <div class="blocked-site-item">
+            <div>
+              <span class="blocked-site-url">youtube.com</span>
+              <span class="blocked-site-time">(30 min/day limit)</span>
+            </div>
+            <button class="remove-site-btn" title="Remove site">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="blocked-site-item">
+            <div>
+              <span class="blocked-site-url">reddit.com</span>
+              <span class="blocked-site-time">(blocked during focus)</span>
+            </div>
+            <button class="remove-site-btn" title="Remove site">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Focus Mode</h2>
+        <p class="group-description">Advanced blocking and focus settings</p>
+        
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <div class="setting-label">Time-based Blocking <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">Set daily time limits for distracting sites</div>
+          </div>
+          <button class="toggle-switch" id="timeBasedBlocking"></button>
+        </div>
+
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <div class="setting-label">Work Hours Mode <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">Different blocking rules for work hours</div>
+          </div>
+          <button class="toggle-switch" id="workHoursMode"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Emergency Override</div>
+            <div class="setting-description">Require typing a phrase to bypass blocks</div>
+          </div>
+          <button class="toggle-switch active" id="emergencyOverride"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accessibility Tab -->
+    <div class="tab-content" id="accessibility">
+      <div class="settings-group">
+        <h2 class="group-title">ADHD Support</h2>
+        <p class="group-description">Features designed for attention and executive function challenges</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Time Blindness Support</div>
+            <div class="setting-description">Visual time indicators and gentle reminders</div>
+          </div>
+          <button class="toggle-switch active" id="timeBlindnessSupport"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Reduced Clutter Mode</div>
+            <div class="setting-description">Minimize visual distractions during focus</div>
+          </div>
+          <button class="toggle-switch" id="reducedClutterMode"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Gentle Notifications</div>
+            <div class="setting-description">Non-jarring, supportive notification style</div>
+          </div>
+          <button class="toggle-switch active" id="gentleNotifications"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Transition Helper</div>
+            <div class="setting-description">Suggestions for task switching and breaks</div>
+          </div>
+          <button class="toggle-switch" id="transitionHelper"></button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Visual Preferences</h2>
+        <p class="group-description">Customize visual elements for better accessibility</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">High Contrast Mode</div>
+            <div class="setting-description">Increase contrast for better visibility</div>
+          </div>
+          <button class="toggle-switch" id="highContrastMode"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Larger Text</div>
+            <div class="setting-description">Increase font size for better readability</div>
+          </div>
+          <button class="toggle-switch" id="largerText"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Reduced Motion</div>
+            <div class="setting-description">Minimize animations and transitions</div>
+          </div>
+          <button class="toggle-switch" id="reducedMotion"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Tab -->
+    <div class="tab-content" id="advanced">
+      <div class="settings-group">
+        <h2 class="group-title">Data & Privacy</h2>
+        <p class="group-description">Manage your data and privacy preferences</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Analytics</div>
+            <div class="setting-description">Help improve Smart Bookmarks with anonymous usage data</div>
+          </div>
+          <button class="toggle-switch active" id="analytics"></button>
+        </div>
+
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <div class="setting-label">Cloud Sync <span class="pro-badge">Pro</span></div>
+            <div class="setting-description">Sync bookmarks and settings across devices</div>
+          </div>
+          <button class="toggle-switch" id="cloudSync"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Export Data</div>
+            <div class="setting-description">Download your bookmarks and time tracking data</div>
+          </div>
+          <button class="form-select" id="exportDataBtn">Export</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Performance</h2>
+        <p class="group-description">Optimize extension performance and resource usage</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Background Processing</div>
+            <div class="setting-description">Process bookmarks and analytics in background</div>
+          </div>
+          <button class="toggle-switch active" id="backgroundProcessing"></button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Cache Size</div>
+            <div class="setting-description">Amount of bookmark data to keep in cache</div>
+          </div>
+          <select class="form-select" id="cacheSize">
+            <option value="small">Small (500 bookmarks)</option>
+            <option value="medium">Medium (1000 bookmarks)</option>
+            <option value="large">Large (2000 bookmarks)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2 class="group-title">Reset & Restore</h2>
+        <p class="group-description">Reset settings or restore from backup</p>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Reset All Settings</div>
+            <div class="setting-description">Restore all settings to default values</div>
+          </div>
+          <button class="form-select" id="resetSettingsBtn" style="background: var(--error-color); color: white;">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="lib/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="auth-service.js"></script>
+  <script src="auth-modal.js"></script>
+  <script src="upgrade-modal-real.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

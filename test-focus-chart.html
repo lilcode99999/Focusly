@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Focus Chart Test - Smart Bookmarks</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --bg-secondary: #f1f5f9;
+      --text-secondary: #64748b;
+      --text-tertiary: #94a3b8;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --radius: 0.5rem;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    
+    .test-section {
+      margin-bottom: 40px;
+    }
+    
+    .test-section h2 {
+      color: #2563eb;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    
+    /* Chart Container */
+    .chart-container {
+      min-height: 160px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin-top: var(--space-4);
+      position: relative;
+      overflow: visible;
+    }
+    
+    .chart-bar {
+      background: var(--primary-light);
+      transition: all 0.3s ease;
+      opacity: 0.8;
+    }
+    
+    .chart-bar.today {
+      background: var(--primary);
+      opacity: 1;
+    }
+    
+    .chart-bar:hover {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Focus Chart Implementation Test</h1>
+    
+    <div class="test-section">
+      <h2>Chart Container Status <span class="status success">✓ Implemented</span></h2>
+      <p>The chart container exists in the Focus Insights section with id="focusChartInsight"</p>
+    </div>
+    
+    <div class="test-section">
+      <h2>Sample Chart Rendering</h2>
+      <p>This is how the focus chart should appear with sample data:</p>
+      
+      <div class="chart-container">
+        <div id="testChart"></div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>JavaScript Implementation <span class="status success">✓ Implemented</span></h2>
+      <ul>
+        <li>✅ <code>updateFocusChart()</code> method exists</li>
+        <li>✅ Called from <code>updateStatsDisplay()</code></li>
+        <li>✅ Processes last 7 days of focus data</li>
+        <li>✅ Handles empty data gracefully</li>
+        <li>✅ Shows today's progress in real-time</li>
+        <li>✅ Responsive bar chart with hover effects</li>
+      </ul>
+    </div>
+    
+    <div class="test-section">
+      <h2>Data Flow</h2>
+      <ol>
+        <li>User completes focus sessions → stored in <code>userData.focusSessions</code></li>
+        <li>Today's progress tracked in <code>userData.todayFocusTime</code></li>
+        <li>Chart aggregates data by day for last 7 days</li>
+        <li>Bar heights scale relative to maximum value</li>
+        <li>Today's bar highlighted in primary color</li>
+      </ol>
+    </div>
+    
+    <div class="test-section">
+      <h2>Visual Features</h2>
+      <ul>
+        <li>📊 Bar chart with 7 days (Mon-Sun)</li>
+        <li>🎯 Today highlighted in blue</li>
+        <li>📏 Minutes displayed on hover</li>
+        <li>📱 Responsive design</li>
+        <li>✨ Smooth animations</li>
+        <li>💡 "Start your first session" message when no data</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    // Sample chart rendering for demonstration
+    const sampleData = [45, 30, 60, 0, 90, 75, 31]; // Sample minutes for each day
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    
+    const chartHTML = `
+      <div style="display: flex; gap: 8px; height: 120px; align-items: flex-end; padding: 0 8px;">
+        ${sampleData.map((minutes, i) => {
+          const maxMinutes = Math.max(...sampleData, 60);
+          const height = minutes > 0 ? Math.max(10, (minutes / maxMinutes) * 100) : 5;
+          const isToday = i === 6;
+          
+          return `
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="flex: 1; width: 100%; display: flex; align-items: flex-end; position: relative;">
+                <div class="chart-bar ${isToday ? 'today' : ''}" 
+                     style="width: 100%; 
+                            height: ${height}%; 
+                            background: ${isToday ? '#2563eb' : '#3b82f6'}; 
+                            border-radius: 4px 4px 0 0; 
+                            transition: all 0.3s ease;
+                            opacity: ${minutes > 0 ? (isToday ? '1' : '0.7') : '0.2'};
+                            cursor: pointer;"
+                     title="${minutes} minutes on ${dayLabels[i]}">
+                  ${minutes > 0 ? `
+                    <div style="position: absolute; 
+                                top: -20px; 
+                                left: 50%; 
+                                transform: translateX(-50%); 
+                                font-size: 0.7rem; 
+                                font-weight: 600; 
+                                color: #2563eb;
+                                white-space: nowrap;">
+                      ${minutes}m
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+              <span style="font-size: 0.7rem; 
+                           color: ${isToday ? '#2563eb' : '#64748b'};
+                           font-weight: ${isToday ? '600' : '400'};">
+                ${dayLabels[i]}
+              </span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    
+    document.getElementById('testChart').innerHTML = chartHTML;
+  </script>
+</body>
+</html>

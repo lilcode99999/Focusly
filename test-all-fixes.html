@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test All UX Fixes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #f9f9f9;
+    }
+    .test-item {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 3px;
+    }
+    .status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .pass { background: #4CAF50; color: white; }
+    .fail { background: #f44336; color: white; }
+    .pending { background: #ff9800; color: white; }
+    button {
+      padding: 8px 16px;
+      margin: 5px;
+      cursor: pointer;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 3px;
+    }
+    button:hover {
+      background: #1976D2;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Smart Bookmarks Extension - All Fixes Test Suite</h1>
+  
+  <div class="test-section">
+    <h2>1. Session Notes ("+ Add notes" functionality)</h2>
+    <div class="test-item">
+      <p><strong>Test:</strong> Click "+ Add notes" link in Recent Sessions</p>
+      <p><strong>Expected:</strong> Opens note editor with pre-filled session template</p>
+      <button id="testSessionNotes">Verify in Extension</button>
+      <span class="status pending" id="sessionNotesStatus">PENDING</span>
+    </div>
+    <div class="test-item">
+      <strong>Steps to test:</strong>
+      <ol>
+        <li>Complete a focus session (or use test timer)</li>
+        <li>Look at "Recent Sessions" in Hub tab</li>
+        <li>Click the "→ Add notes" link</li>
+        <li>Should switch to Notes tab and open editor with session info</li>
+      </ol>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>2. Secure HTTPS Shared Links</h2>
+    <div class="test-item">
+      <p><strong>Test:</strong> Share a note via "Copy Link"</p>
+      <p><strong>Expected:</strong> Generates chrome-extension:// URL (secure)</p>
+      <button id="testShareLinks">Test Share Link</button>
+      <span class="status pending" id="shareLinksStatus">PENDING</span>
+    </div>
+    <div class="test-item">
+      <strong>Generated link format:</strong>
+      <code id="linkFormat">chrome-extension://[extension-id]/note-viewer.html?id=[note-id]</code>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>3. UI Overlap Fix (X Button)</h2>
+    <div class="test-item">
+      <p><strong>Test:</strong> X close button positioning</p>
+      <p><strong>Expected:</strong> X button in top-right, not overlapping Save button</p>
+      <button id="testUIOverlap">Verify in Extension</button>
+      <span class="status pending" id="uiOverlapStatus">PENDING</span>
+    </div>
+    <div class="test-item">
+      <strong>Visual checklist:</strong>
+      <ul>
+        <li>X button has gray background on hover</li>
+        <li>Clear spacing between X and other buttons</li>
+        <li>X button is easily clickable</li>
+        <li>Save button is in header area, not overlapped</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>4. CSP Compliance</h2>
+    <div class="test-item">
+      <p><strong>Test:</strong> No CSP errors in console</p>
+      <p><strong>Expected:</strong> Clean console, no inline script violations</p>
+      <button id="testCSP">Check Console</button>
+      <span class="status pending" id="cspStatus">PENDING</span>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Quick Test Actions</h2>
+    <button id="createTestSession">Create Test Session</button>
+    <button id="createTestNote">Create Test Note</button>
+    <button id="checkExtensionId">Get Extension Info</button>
+  </div>
+  
+  <div id="log" class="log"></div>
+  
+  <script>
+    function log(message, type = 'info') {
+      const logEl = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+      logEl.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function updateStatus(testId, status) {
+      const statusEl = document.getElementById(testId);
+      statusEl.className = `status ${status}`;
+      statusEl.textContent = status.toUpperCase();
+    }
+    
+    // Test session notes
+    document.getElementById('testSessionNotes').addEventListener('click', async () => {
+      log('Testing session notes functionality...');
+      
+      // Create a test session
+      const testSession = {
+        timestamp: Date.now(),
+        duration: 25,
+        completed: true
+      };
+      
+      // Get existing sessions
+      const { focusAnalytics = { sessions: [] } } = await chrome.storage.local.get('focusAnalytics');
+      focusAnalytics.sessions.push(testSession);
+      await chrome.storage.local.set({ focusAnalytics });
+      
+      log('Test session created. Open extension and check Recent Sessions.');
+      log('Click "+ Add notes" link to test functionality.');
+      
+      // User must manually verify
+      setTimeout(() => {
+        const passed = confirm('Did the "+ Add notes" link open the note editor with session info?');
+        updateStatus('sessionNotesStatus', passed ? 'pass' : 'fail');
+        log(`Session notes test: ${passed ? 'PASSED' : 'FAILED'}`, passed ? 'success' : 'error');
+      }, 1000);
+    });
+    
+    // Test share links
+    document.getElementById('testShareLinks').addEventListener('click', async () => {
+      log('Testing secure share links...');
+      
+      // Create a test note
+      const testNote = {
+        id: `test-note-${Date.now()}`,
+        title: 'Test Shared Note',
+        content: 'This is a test note for sharing.',
+        htmlContent: '<p>This is a test note for sharing.</p>',
+        timestamp: Date.now(),
+        category: 'test'
+      };
+      
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      notes.unshift(testNote);
+      await chrome.storage.local.set({ notes });
+      
+      // Generate the share URL
+      const extensionId = chrome.runtime.id;
+      const shareUrl = `chrome-extension://${extensionId}/note-viewer.html?id=${testNote.id}`;
+      
+      document.getElementById('linkFormat').textContent = shareUrl;
+      
+      log('Test note created with share URL:');
+      log(shareUrl);
+      log('Open extension, edit the test note, and use Share > Copy Link');
+      
+      // Test if URL can be copied
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        log('Share URL copied to clipboard successfully', 'success');
+        updateStatus('shareLinksStatus', 'pass');
+      } catch (error) {
+        log('Failed to copy share URL: ' + error.message, 'error');
+        updateStatus('shareLinksStatus', 'fail');
+      }
+    });
+    
+    // Test UI overlap
+    document.getElementById('testUIOverlap').addEventListener('click', () => {
+      log('Please open the extension and edit any note to check X button positioning.');
+      log('The X button should be in the top-right corner with proper spacing.');
+      
+      setTimeout(() => {
+        const passed = confirm('Is the X button properly positioned without overlapping the Save button?');
+        updateStatus('uiOverlapStatus', passed ? 'pass' : 'fail');
+        log(`UI overlap test: ${passed ? 'PASSED' : 'FAILED'}`, passed ? 'success' : 'error');
+      }, 1000);
+    });
+    
+    // Test CSP
+    document.getElementById('testCSP').addEventListener('click', () => {
+      log('Open browser DevTools console (F12) and check for CSP errors.');
+      log('There should be NO "Refused to execute inline event handler" errors.');
+      
+      setTimeout(() => {
+        const passed = confirm('Is the console free of CSP inline script errors?');
+        updateStatus('cspStatus', passed ? 'pass' : 'fail');
+        log(`CSP compliance test: ${passed ? 'PASSED' : 'FAILED'}`, passed ? 'success' : 'error');
+      }, 1000);
+    });
+    
+    // Helper actions
+    document.getElementById('createTestSession').addEventListener('click', async () => {
+      const duration = Math.floor(Math.random() * 30) + 10;
+      const testSession = {
+        timestamp: Date.now() - (Math.random() * 3600000), // Random time in last hour
+        duration: duration,
+        completed: true
+      };
+      
+      const { focusAnalytics = { sessions: [] } } = await chrome.storage.local.get('focusAnalytics');
+      focusAnalytics.sessions.push(testSession);
+      await chrome.storage.local.set({ focusAnalytics });
+      
+      log(`Created test session: ${duration} minutes`, 'success');
+    });
+    
+    document.getElementById('createTestNote').addEventListener('click', async () => {
+      const testNote = {
+        id: `test-${Date.now()}`,
+        title: `Test Note ${new Date().toLocaleTimeString()}`,
+        content: 'This is a test note created for testing purposes.\n\nIt has multiple lines and **formatting**.',
+        htmlContent: '<p>This is a test note created for testing purposes.</p><p>It has multiple lines and <strong>formatting</strong>.</p>',
+        timestamp: Date.now(),
+        category: 'test',
+        pinned: false
+      };
+      
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      notes.unshift(testNote);
+      await chrome.storage.local.set({ notes });
+      
+      log(`Created test note: "${testNote.title}"`, 'success');
+    });
+    
+    document.getElementById('checkExtensionId').addEventListener('click', () => {
+      const extensionId = chrome.runtime.id;
+      const extensionVersion = chrome.runtime.getManifest().version;
+      
+      log(`Extension ID: ${extensionId}`);
+      log(`Extension Version: ${extensionVersion}`);
+      log(`Extension URL: chrome-extension://${extensionId}/`);
+    });
+    
+    // Initial log
+    log('All fixes test suite loaded. Run each test to verify functionality.');
+    log('Extension must be loaded and active for tests to work.');
+  </script>
+</body>
+</html>

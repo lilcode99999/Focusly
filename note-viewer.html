@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shared Note - Smart Bookmarks</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    
+    .header {
+      background: #2563eb;
+      color: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo {
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .note-viewer {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .note-header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    
+    h1 { 
+      color: #0f172a;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    
+    .meta { 
+      color: #64748b;
+      font-size: 14px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .content { 
+      font-size: 16px;
+      color: #334155;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .content h1, .content h2, .content h3 {
+      margin: 20px 0 10px 0;
+    }
+    
+    .content ul, .content ol {
+      margin: 15px 0;
+      padding-left: 30px;
+    }
+    
+    .content strong {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .actions {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .action-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .primary-btn {
+      background: #2563eb;
+      color: white;
+    }
+    
+    .primary-btn:hover {
+      background: #1d4ed8;
+    }
+    
+    .secondary-btn {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    
+    .secondary-btn:hover {
+      background: #e2e8f0;
+    }
+    
+    .footer {
+      margin-top: 60px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      padding-bottom: 40px;
+    }
+    
+    .error-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    @media (max-width: 600px) {
+      .note-viewer {
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">
+        <span>🔖</span>
+        <span>Smart Bookmarks</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="note-viewer" id="noteContent">
+      <div class="error-state">
+        <h2>Loading Note...</h2>
+        <p style="margin-top: 10px; color: #64748b;">
+          Retrieving shared note data...
+        </p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>This note was shared using Smart Bookmarks Extension</p>
+    </div>
+  </div>
+  
+  <script>
+    // Load note from URL parameters
+    async function loadSharedNote() {
+      const noteContainer = document.getElementById('noteContent');
+      
+      try {
+        // Get note ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const noteId = urlParams.get('id');
+        
+        if (!noteId) {
+          showError('No note ID provided');
+          return;
+        }
+        
+        // Send message to background script to get note data
+        chrome.runtime.sendMessage({ 
+          type: 'getSharedNote', 
+          noteId: noteId 
+        }, (response) => {
+          if (response && response.note) {
+            displayNote(response.note);
+          } else {
+            showError('Note not found or has expired');
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error loading note:', error);
+        showError('Error loading note');
+      }
+    }
+    
+    function displayNote(noteData) {
+      const noteContainer = document.getElementById('noteContent');
+      const createdDate = new Date(noteData.timestamp).toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      noteContainer.innerHTML = `
+        <div class="note-header">
+          <h1>${noteData.title || 'Untitled Note'}</h1>
+          <div class="meta">
+            <div class="meta-item">
+              <span>📅 ${createdDate}</span>
+            </div>
+            ${noteData.category ? `
+            <div class="meta-item">
+              <span>📁 ${noteData.category.charAt(0).toUpperCase() + noteData.category.slice(1)}</span>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+        <div class="content">${noteData.htmlContent || noteData.content}</div>
+        <div class="actions">
+          <button class="action-btn primary-btn" id="copyNoteBtn">
+            <span>📋</span>
+            <span>Copy Note</span>
+          </button>
+          <button class="action-btn secondary-btn" id="printBtn">
+            <span>🖨️</span>
+            <span>Print</span>
+          </button>
+        </div>
+      `;
+      
+      window.currentNote = noteData;
+    }
+    
+    function showError(message) {
+      const noteContainer = document.getElementById('noteContent');
+      noteContainer.innerHTML = `
+        <div class="error-state">
+          <h2>Unable to Load Note</h2>
+          <p style="margin-top: 10px; color: #64748b;">
+            ${message}
+          </p>
+        </div>
+      `;
+    }
+    
+    function copyNote() {
+      if (window.currentNote) {
+        const text = window.currentNote.content || window.currentNote.htmlContent.replace(/<[^>]*>/g, '');
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Note copied to clipboard!');
+        });
+      }
+    }
+    
+    // Set up event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load note on page load
+      loadSharedNote();
+      
+      // Add event listeners using delegation
+      document.addEventListener('click', (e) => {
+        if (e.target.id === 'copyNoteBtn' || e.target.closest('#copyNoteBtn')) {
+          copyNote();
+        } else if (e.target.id === 'printBtn' || e.target.closest('#printBtn')) {
+          window.print();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

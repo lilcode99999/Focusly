@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Focus Chart Debug Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      border: 1px solid #e0e0e0;
+    }
+    .success {
+      color: #4caf50;
+      font-weight: bold;
+    }
+    .error {
+      color: #f44336;
+      font-weight: bold;
+    }
+    .info {
+      color: #2196f3;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Focus Chart Debug Test</h1>
+    
+    <div class="test-section">
+      <h2>Extension Status</h2>
+      <p>To test the focus chart:</p>
+      <ol>
+        <li>Open the Chrome extension (Smart Bookmarks)</li>
+        <li>Click on the Focus tab</li>
+        <li>Open the Chrome DevTools console (right-click → Inspect → Console)</li>
+        <li>Look for debug messages starting with "🔍 DEBUG:"</li>
+      </ol>
+    </div>
+
+    <div class="test-section">
+      <h2>Expected Debug Output</h2>
+      <p>You should see these messages in the console:</p>
+      <pre>
+📊 Initializing focus chart
+🔍 DEBUG: Starting chart initialization
+🔍 DEBUG: Current tab: focus
+🔍 DEBUG: Active tab element: focusTab
+🔍 DEBUG: Chart container found: true
+🔍 DEBUG: Container dimensions: [width] x [height]
+🔍 DEBUG: Container visible: true
+🔍 DEBUG: updateFocusChart called
+📊 Rendering CSS-based chart
+🔍 DEBUG: userData.focusSessions: [array of sessions]
+📊 Last 7 days data: [array of values]
+🔍 DEBUG: About to set chart HTML
+✅ CSS chart rendered successfully
+      </pre>
+    </div>
+
+    <div class="test-section">
+      <h2>Visual Check</h2>
+      <p>In the Focus tab, you should see:</p>
+      <ul>
+        <li class="error">Initially: "TEST: Chart loading..." in red text</li>
+        <li class="success">After loading: A bar chart showing the last 7 days of focus data</li>
+      </ul>
+    </div>
+
+    <div class="test-section">
+      <h2>Troubleshooting</h2>
+      <p>If the chart doesn't appear:</p>
+      <ol>
+        <li><strong>Check Tab Selection:</strong> Make sure the Focus tab is selected (it should be blue/highlighted)</li>
+        <li><strong>Console Errors:</strong> Look for any red error messages in the console</li>
+        <li><strong>Container Not Found:</strong> If you see "❌ Chart container not found!", the DOM might not be ready</li>
+        <li><strong>No Data:</strong> If last7Days shows all zeros, there might be no focus session data stored</li>
+        <li><strong>Reload Extension:</strong> Go to chrome://extensions/, find Smart Bookmarks, and click the reload button</li>
+      </ol>
+    </div>
+
+    <div class="test-section">
+      <h2>Quick Actions</h2>
+      <p>To generate test data:</p>
+      <ol>
+        <li>Use the Focus Timer in the extension for a few minutes</li>
+        <li>Complete a focus session (let the timer run out or click stop)</li>
+        <li>The chart should update with the new data</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>

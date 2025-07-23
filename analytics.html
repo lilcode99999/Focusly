@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <title>Smart Bookmarks Analytics</title>
+  <style>
+    :root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #f8f9fa;
+      --tertiary-bg: #f1f3f4;
+      --surface-bg: #ffffff;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --divider-color: rgba(0, 0, 0, 0.06);
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #a1a1a6;
+      --accent-color: #007aff;
+      --accent-hover: #0051d5;
+      --success-color: #34c759;
+      --warning-color: #ff9500;
+      --error-color: #ff3b30;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --radius-small: 6px;
+      --radius-medium: 8px;
+      --radius-large: 12px;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 12px;
+      --spacing-lg: 16px;
+      --spacing-xl: 20px;
+      --spacing-2xl: 24px;
+      --spacing-3xl: 32px;
+      --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      --font-size-xs: 11px;
+      --font-size-sm: 13px;
+      --font-size-md: 15px;
+      --font-size-lg: 17px;
+      --font-size-xl: 20px;
+      --font-size-2xl: 24px;
+      --font-size-3xl: 32px;
+      --transition-fast: 0.15s ease-out;
+      --transition-medium: 0.25s ease-out;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary-bg: #000000;
+        --secondary-bg: #1c1c1e;
+        --tertiary-bg: #2c2c2e;
+        --surface-bg: #1c1c1e;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --divider-color: rgba(255, 255, 255, 0.06);
+        --text-primary: #ffffff;
+        --text-secondary: #a1a1a6;
+        --text-tertiary: #6d6d70;
+        --accent-color: #0a84ff;
+        --accent-hover: #409cff;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-system);
+      font-size: var(--font-size-md);
+      line-height: 1.5;
+      background: var(--primary-bg);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-3xl);
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: var(--spacing-3xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-info h1 {
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+      letter-spacing: -0.02em;
+    }
+
+    .header-info p {
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
+    }
+
+    .date-range-selector {
+      display: flex;
+      background: var(--secondary-bg);
+      border-radius: var(--radius-medium);
+      padding: var(--spacing-xs);
+      border: 1px solid var(--border-color);
+    }
+
+    .date-range-option {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: var(--radius-small);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      background: none;
+    }
+
+    .date-range-option.active {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    /* Stats Overview */
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--spacing-xl);
+      margin-bottom: var(--spacing-3xl);
+    }
+
+    .stat-card {
+      background: var(--surface-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-large);
+      padding: var(--spacing-2xl);
+      text-align: center;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--spacing-lg);
+      color: white;
+      font-size: 20px;
+    }
+
+    .stat-value {
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .stat-change {
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--spacing-xs);
+    }
+
+    .stat-change.positive {
+      background: rgba(52, 199, 89, 0.1);
+      color: var(--success-color);
+    }
+
+    .stat-change.negative {
+      background: rgba(255, 59, 48, 0.1);
+      color: var(--error-color);
+    }
+
+    /* Charts Section */
+    .charts-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--spacing-xl);
+      margin-bottom: var(--spacing-3xl);
+    }
+
+    .chart-card {
+      background: var(--surface-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-large);
+      padding: var(--spacing-2xl);
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .chart-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .chart-period {
+      font-size: var(--font-size-sm);
+      color: var(--text-tertiary);
+    }
+
+    .chart-container {
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--tertiary-bg);
+      border-radius: var(--radius-medium);
+      color: var(--text-secondary);
+    }
+
+    /* Top Sites */
+    .top-sites-section {
+      background: var(--surface-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-large);
+      padding: var(--spacing-2xl);
+      margin-bottom: var(--spacing-3xl);
+    }
+
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .site-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .site-item {
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-lg);
+      background: var(--tertiary-bg);
+      border-radius: var(--radius-medium);
+    }
+
+    .site-favicon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-small);
+      margin-right: var(--spacing-lg);
+      background: var(--secondary-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+    }
+
+    .site-info {
+      flex: 1;
+    }
+
+    .site-name {
+      font-size: var(--font-size-md);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .site-url {
+      font-size: var(--font-size-sm);
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+    }
+
+    .site-stats {
+      text-align: right;
+    }
+
+    .site-time {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+
+    .site-visits {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .site-progress {
+      width: 100px;
+      height: 4px;
+      background: var(--border-color);
+      border-radius: 2px;
+      margin: var(--spacing-sm) 0;
+      overflow: hidden;
+    }
+
+    .site-progress-bar {
+      height: 100%;
+      background: var(--accent-color);
+      border-radius: 2px;
+      transition: width var(--transition-medium);
+    }
+
+    /* Insights Section */
+    .insights-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-xl);
+    }
+
+    .insight-card {
+      background: var(--surface-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-large);
+      padding: var(--spacing-2xl);
+    }
+
+    .insight-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--spacing-lg);
+      color: white;
+    }
+
+    .insight-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .insight-description {
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .insight-highlight {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    /* Loading State */
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border-color);
+      border-top: 3px solid var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: var(--spacing-xl);
+      }
+      
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-lg);
+      }
+      
+      .charts-section {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-overview {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+    }
+
+    /* Pro Badge */
+    .pro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+      color: white;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      border-radius: var(--spacing-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pro-badge::before {
+      content: '✨';
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-info">
+        <h1>Analytics Dashboard <span class="pro-badge">Pro</span></h1>
+        <p>Insights into your browsing habits and productivity patterns</p>
+      </div>
+      <div class="date-range-selector">
+        <button class="date-range-option active" data-range="today">Today</button>
+        <button class="date-range-option" data-range="week">7 Days</button>
+        <button class="date-range-option" data-range="month">30 Days</button>
+      </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <section class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-value" id="totalTime">0h 0m</div>
+        <div class="stat-label">Total Active Time</div>
+        <div class="stat-change positive" id="timeChange">+12% from yesterday</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🌐</div>
+        <div class="stat-value" id="sitesVisited">0</div>
+        <div class="stat-label">Sites Visited</div>
+        <div class="stat-change negative" id="sitesChange">-3% from yesterday</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value" id="focusScore">0%</div>
+        <div class="stat-label">Focus Score</div>
+        <div class="stat-change positive" id="focusChange">+8% from yesterday</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🔖</div>
+        <div class="stat-value" id="bookmarksAdded">0</div>
+        <div class="stat-label">Bookmarks Added</div>
+        <div class="stat-change positive" id="bookmarksChange">+2 from yesterday</div>
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="chart-title">Time Breakdown</h2>
+          <span class="chart-period">Last 7 days</span>
+        </div>
+        <div class="chart-container" id="timeChart">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+      
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="chart-title">Daily Pattern</h2>
+          <span class="chart-period">This week</span>
+        </div>
+        <div class="chart-container" id="patternChart">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Sites -->
+    <section class="top-sites-section">
+      <h2 class="section-title">Top Sites</h2>
+      <div class="site-list" id="topSitesList">
+        <div class="site-item">
+          <div class="site-favicon">📄</div>
+          <div class="site-info">
+            <div class="site-name">GitHub</div>
+            <div class="site-url">github.com</div>
+          </div>
+          <div class="site-stats">
+            <div class="site-time">2h 34m</div>
+            <div class="site-visits">47 visits</div>
+            <div class="site-progress">
+              <div class="site-progress-bar" style="width: 85%"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="site-item">
+          <div class="site-favicon">📚</div>
+          <div class="site-info">
+            <div class="site-name">Stack Overflow</div>
+            <div class="site-url">stackoverflow.com</div>
+          </div>
+          <div class="site-stats">
+            <div class="site-time">1h 42m</div>
+            <div class="site-visits">23 visits</div>
+            <div class="site-progress">
+              <div class="site-progress-bar" style="width: 60%"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="site-item">
+          <div class="site-favicon">📖</div>
+          <div class="site-info">
+            <div class="site-name">Documentation</div>
+            <div class="site-url">docs.example.com</div>
+          </div>
+          <div class="site-stats">
+            <div class="site-time">1h 18m</div>
+            <div class="site-visits">15 visits</div>
+            <div class="site-progress">
+              <div class="site-progress-bar" style="width: 45%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Insights -->
+    <section class="insights-section">
+      <div class="insight-card">
+        <div class="insight-icon">🧠</div>
+        <h3 class="insight-title">Focus Patterns</h3>
+        <p class="insight-description">
+          Your most productive hours are <span class="insight-highlight">9:00 AM - 11:30 AM</span>. 
+          You maintain focus for an average of 47 minutes before taking breaks.
+        </p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-icon">📱</div>
+        <h3 class="insight-title">Distraction Analysis</h3>
+        <p class="insight-description">
+          You check social media <span class="insight-highlight">23% less</span> during focus sessions. 
+          Consider blocking distracting sites during productive hours.
+        </p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-icon">🔖</div>
+        <h3 class="insight-title">Bookmark Behavior</h3>
+        <p class="insight-description">
+          You bookmark <span class="insight-highlight">3x more</span> content when coding for 2+ hours. 
+          Your semantic searches are most effective in the morning.
+        </p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-icon">⚡</div>
+        <h3 class="insight-title">Productivity Tip</h3>
+        <p class="insight-description">
+          Try the <span class="insight-highlight">52-17 technique</span> - work for 52 minutes, 
+          then take a 17-minute break. It matches your natural focus rhythm.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script src="analytics.js"></script>
+</body>
+</html>

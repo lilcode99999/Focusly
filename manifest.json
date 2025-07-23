@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Focusly",
+  "version": "1.0.0",
+  "description": "ADHD-friendly focus timer with AI-powered productivity insights",
+  "permissions": [
+    "bookmarks",
+    "activeTab",
+    "tabs",
+    "storage",
+    "notifications",
+    "downloads",
+    "alarms"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://txairbygkxuaqwfcospq.supabase.co/*",
+    "https://checkout.stripe.com/*",
+    "https://billing.stripe.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup-prod.html",
+    "default_title": "Focusly",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js", "time-tracker.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["oauth-callback.html", "payment-success.html", "break-notification.html", "break-notification.js", "note-viewer.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Break Timer</title>
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #log {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      min-height: 200px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Break Timer Functions</h1>
+  
+  <button id="test5min">Test 5 Min Break</button>
+  <button id="test10min">Test 10 Min Break</button>
+  <button id="testCustom">Test Custom Break</button>
+  <button id="getState">Get Timer State</button>
+  
+  <div id="log"></div>
+  
+  <script>
+    const log = (msg) => {
+      const logDiv = document.getElementById('log');
+      logDiv.textContent += msg + '\n';
+      console.log(msg);
+    };
+    
+    document.getElementById('test5min').addEventListener('click', async () => {
+      log('Testing 5 min break...');
+      try {
+        const response = await chrome.runtime.sendMessage({
+          action: 'breakNotificationAction',
+          breakAction: 'break5'
+        });
+        log('Response: ' + JSON.stringify(response));
+      } catch (error) {
+        log('Error: ' + error.message);
+      }
+    });
+    
+    document.getElementById('test10min').addEventListener('click', async () => {
+      log('Testing 10 min break...');
+      try {
+        const response = await chrome.runtime.sendMessage({
+          action: 'breakNotificationAction',
+          breakAction: 'break10'
+        });
+        log('Response: ' + JSON.stringify(response));
+      } catch (error) {
+        log('Error: ' + error.message);
+      }
+    });
+    
+    document.getElementById('testCustom').addEventListener('click', async () => {
+      log('Testing custom break...');
+      try {
+        const response = await chrome.runtime.sendMessage({
+          action: 'breakNotificationAction',
+          breakAction: 'customBreak',
+          duration: 3
+        });
+        log('Response: ' + JSON.stringify(response));
+      } catch (error) {
+        log('Error: ' + error.message);
+      }
+    });
+    
+    document.getElementById('getState').addEventListener('click', async () => {
+      log('Getting timer state...');
+      try {
+        const response = await chrome.runtime.sendMessage({
+          action: 'getTimerState'
+        });
+        log('Timer State: ' + JSON.stringify(response.timerState, null, 2));
+      } catch (error) {
+        log('Error: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>

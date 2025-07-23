@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Editor Fixes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Editor Fixes Test</h1>
+  
+  <div class="test-section">
+    <h2>Create Test Note for Editing</h2>
+    <button id="createEditableNote">Create Note & Open Editor</button>
+    <p>This will create a test note and simulate opening the editor</p>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Share Functions</h2>
+    <button id="testShareDropdown">Test Share Dropdown</button>
+    <button id="testCopyFunctions">Test Copy Functions</button>
+    <button id="testExportPDF">Test PDF Export</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Save Functions</h2>
+    <button id="testManualSave">Test Manual Save</button>
+    <button id="testAutoSave">Test Auto-Save</button>
+    <button id="testSaveShortcut">Test Cmd+S Shortcut</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Tooltips & Visual Feedback</h2>
+    <button id="testTooltips">Check Tooltip Implementation</button>
+    <button id="testButtonStates">Test Button Active States</button>
+  </div>
+  
+  <div id="log" class="log"></div>
+  
+  <script>
+    function log(message) {
+      const logEl = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      logEl.textContent = `[${timestamp}] ${message}\n` + logEl.textContent;
+    }
+    
+    // Create test note
+    document.getElementById('createEditableNote').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      
+      const testNote = {
+        id: `note-${Date.now()}`,
+        content: `# Test Note for Editor\n\nThis is a **test note** with *formatting*.\n\n- Test bullet point\n- Another point\n\n1. Numbered item\n2. Second item\n\nTest link: [Google](https://google.com)\n\n#test #editor #formatting`,
+        htmlContent: '<h1>Test Note for Editor</h1><p>This is a <strong>test note</strong> with <em>formatting</em>.</p><ul><li>Test bullet point</li><li>Another point</li></ul><ol><li>Numbered item</li><li>Second item</li></ol><p>Test link: <a href="https://google.com">Google</a></p><p>#test #editor #formatting</p>',
+        type: 'test',
+        storageType: 'local',
+        timestamp: Date.now(),
+        category: 'general',
+        title: 'Test Note for Editor',
+        pinned: false
+      };
+      
+      notes.unshift(testNote);
+      await chrome.storage.local.set({ notes });
+      
+      log('Created test note. Open extension and click on it to edit.');
+      log('Note ID: ' + testNote.id);
+    });
+    
+    // Test share dropdown
+    document.getElementById('testShareDropdown').addEventListener('click', () => {
+      log('Testing share dropdown functionality:');
+      log('1. Share button should show dropdown on click');
+      log('2. Dropdown should contain: Copy Link, Copy as Text, Copy as Markdown, Export as PDF');
+      log('3. Dropdown should close when clicking outside');
+      log('4. Each option should show hover effect');
+      log('');
+      log('Please open the extension and test the Share button in the editor.');
+    });
+    
+    // Test copy functions
+    document.getElementById('testCopyFunctions').addEventListener('click', async () => {
+      // Test clipboard API
+      try {
+        await navigator.clipboard.writeText('Test clipboard write');
+        log('✓ Clipboard API is working');
+        
+        const clipboardText = await navigator.clipboard.readText();
+        log('✓ Clipboard contains: ' + clipboardText);
+      } catch (error) {
+        log('✗ Clipboard API error: ' + error.message);
+        log('Note: Clipboard API requires HTTPS or localhost');
+      }
+      
+      log('');
+      log('Test copy functions in editor:');
+      log('1. Copy Link - should copy shareable URL');
+      log('2. Copy as Text - should copy plain text');
+      log('3. Copy as Markdown - should copy with formatting');
+    });
+    
+    // Test manual save
+    document.getElementById('testManualSave').addEventListener('click', () => {
+      log('Testing manual save:');
+      log('1. Save button should save immediately');
+      log('2. Should show "Saved!" indicator');
+      log('3. Button should change from Save* to Save');
+      log('4. Success animation should play');
+      log('');
+      log('Make changes to a note and click Save button to test.');
+    });
+    
+    // Test auto-save
+    document.getElementById('testAutoSave').addEventListener('click', () => {
+      log('Testing auto-save:');
+      log('1. Make changes to note content');
+      log('2. Save button should change to "Save*" (orange)');
+      log('3. After 3 seconds of no typing, should auto-save');
+      log('4. Save indicator should appear briefly');
+      log('5. Button should return to normal "Save" (blue)');
+    });
+    
+    // Test save shortcut
+    document.getElementById('testSaveShortcut').addEventListener('click', () => {
+      log('Testing Cmd+S shortcut:');
+      log('1. Make changes to a note');
+      log('2. Press Cmd+S (Mac) or Ctrl+S (Windows)');
+      log('3. Should save immediately like manual save');
+      log('4. Should show same visual feedback');
+    });
+    
+    // Test tooltips
+    document.getElementById('testTooltips').addEventListener('click', () => {
+      log('Testing tooltips on formatting buttons:');
+      log('');
+      log('Expected tooltips (after 0.5s hover):');
+      log('- Bold (B): "Bold text (Cmd+B)"');
+      log('- Italic (I): "Italic text (Cmd+I)"');
+      log('- Underline (U): "Underline text (Cmd+U)"');
+      log('- Link (🔗): "Insert link (Cmd+K)"');
+      log('- Bullet (•): "Bullet points"');
+      log('- Number (1.): "Numbered list"');
+      log('- Headers dropdown: "Header size"');
+      log('- Font size: "Text size (Normal, Small, Large)"');
+      log('- Alignment buttons: "Align left/center/right"');
+      log('- Share button: "Share note with others"');
+      log('- Save button: "Save changes (Auto-save: 3s)"');
+    });
+    
+    // Test button states
+    document.getElementById('testButtonStates').addEventListener('click', () => {
+      log('Testing button visual feedback:');
+      log('');
+      log('Hover states:');
+      log('- Format buttons: Light background, slight lift');
+      log('- Share/Save buttons: Opacity change, slight lift');
+      log('');
+      log('Active states:');
+      log('- Format buttons: Blue background when clicked');
+      log('- Bold/Italic/etc stay highlighted when active in text');
+      log('');
+      log('Success states:');
+      log('- Save button: Green flash animation on successful save');
+    });
+    
+    log('Editor fixes test page loaded');
+    log('Click buttons to test various features');
+  </script>
+</body>
+</html>

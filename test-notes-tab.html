@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Notes Tab</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Notes Tab Test</h1>
+  
+  <div class="test-section">
+    <h2>Test Notes Storage</h2>
+    <button id="checkNotes">Check Stored Notes</button>
+    <button id="addTestNote">Add Test Note</button>
+    <button id="clearNotes">Clear All Notes</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Session Notes</h2>
+    <button id="checkSessionNotes">Check Session Notes</button>
+    <button id="simulateTimer">Simulate Timer Running</button>
+  </div>
+  
+  <div id="log" class="log"></div>
+  
+  <script>
+    function log(message) {
+      const logEl = document.getElementById('log');
+      logEl.textContent = message + '\n' + logEl.textContent;
+    }
+    
+    // Check stored notes
+    document.getElementById('checkNotes').addEventListener('click', async () => {
+      const data = await chrome.storage.local.get(['notes', 'noteStoragePreference']);
+      log('Notes Storage Preference: ' + (data.noteStoragePreference || 'not set'));
+      log('Total Notes: ' + (data.notes ? data.notes.length : 0));
+      if (data.notes && data.notes.length > 0) {
+        data.notes.slice(0, 3).forEach((note, i) => {
+          log(`Note ${i + 1}: ${note.content} (${note.storageType})`);
+        });
+      }
+      log('---');
+    });
+    
+    // Add test note
+    document.getElementById('addTestNote').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      const newNote = {
+        content: `Test note created at ${new Date().toLocaleTimeString()}`,
+        type: 'quick',
+        storageType: 'local',
+        timestamp: Date.now()
+      };
+      notes.unshift(newNote);
+      await chrome.storage.local.set({ notes });
+      log('Test note added');
+    });
+    
+    // Clear notes
+    document.getElementById('clearNotes').addEventListener('click', async () => {
+      await chrome.storage.local.set({ notes: [] });
+      log('All notes cleared');
+    });
+    
+    // Check session notes
+    document.getElementById('checkSessionNotes').addEventListener('click', async () => {
+      const data = await chrome.storage.local.get(['currentFocusNotes', 'sessionNotes']);
+      log('Current Focus Notes: ' + (data.currentFocusNotes || 'empty'));
+      log('Old Session Notes: ' + (data.sessionNotes || 'empty'));
+      log('---');
+    });
+    
+    // Simulate timer
+    document.getElementById('simulateTimer').addEventListener('click', async () => {
+      await chrome.runtime.sendMessage({
+        action: 'startTimer',
+        duration: 25
+      });
+      log('Started 25-minute focus timer');
+    });
+    
+    log('Notes tab test page loaded');
+  </script>
+</body>
+</html>

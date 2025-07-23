@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="#007AFF"/>
+  
+  <!-- Focus symbol -->
+  <g transform="translate(64, 64)">
+    <!-- Outer circle -->
+    <circle r="36" stroke="white" stroke-width="6" fill="none"/>
+    
+    <!-- Inner circle (focus point) -->
+    <circle r="16" fill="white"/>
+    
+    <!-- Focus lines -->
+    <path d="M0 -48 L0 -40" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <path d="M0 40 L0 48" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <path d="M-48 0 L-40 0" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <path d="M40 0 L48 0" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

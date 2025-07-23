@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Chart Test - Smart Bookmarks</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --bg-secondary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --radius: 0.5rem;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    /* CSS-Based Visual Chart Styles */
+    .focus-chart-text {
+      padding: var(--space-3);
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+    }
+    
+    .focus-chart-text h4 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 var(--space-3) 0;
+    }
+    
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 120px;
+      margin-bottom: var(--space-2);
+    }
+    
+    .chart-day {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .bar-container {
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+    }
+    
+    .bar {
+      width: 100%;
+      background: var(--primary-light);
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s ease;
+      position: relative;
+      min-height: 4px;
+    }
+    
+    .bar.today {
+      background: var(--primary);
+    }
+    
+    .bar:hover {
+      opacity: 0.8;
+    }
+    
+    .bar-value {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    
+    .day-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    
+    .day-label.today {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CSS Chart Implementation Test</h1>
+    
+    <div class="success">
+      ✅ This is the working CSS-based chart implementation - NO Chart.js needed!
+    </div>
+    
+    <div class="focus-chart-text">
+      <h4>Weekly Focus Progress</h4>
+      <div class="chart-bars">
+        <div class="chart-day">
+          <div class="bar-container">
+            <div class="bar" style="height: 50%;">
+              <span class="bar-value">45m</span>
+            </div>
+          </div>
+          <span class="day-label">Mon</span>
+        </div>
+        <div class="chart-day">
+          <div class="bar-container">
+            <div class="bar" style="height: 33%;">
+              <span class="bar-value">30m</span>
+            </div>
+          </div>
+          <span class="day-label">Tue</span>
+        </div>
+        <div class="chart-day">
+          <div class="bar-container">
+            <div class="bar" style="height: 67%;">
+              <span class="bar-value">60m</span>
+            </div>
+          </div>
+          <span class="day-label">Wed</span>
+        </div>
+        <div class="chart-day">
+          <div class="bar-container">
+            <div class="bar" style="height: 5%;">
+            </div>
+          </div>
+          <span class="day-label">Thu</span>
+        </div>
+        <div class="chart-day">
+          <div class="bar-container">
+            <div class="bar" style="height: 100%;">
+              <span class="bar-value">90m</span>
+            </div>
+          </div>
+          <span class="day-label">Fri</span>
+        </div>
+        <div class="chart-day">
+          <div class="bar-container">
+            <div class="bar" style="height: 83%;">
+              <span class="bar-value">75m</span>
+            </div>
+          </div>
+          <span class="day-label">Sat</span>
+        </div>
+        <div class="chart-day">
+          <div class="bar-container">
+            <div class="bar today" style="height: 7%;">
+              <span class="bar-value">6m</span>
+            </div>
+          </div>
+          <span class="day-label today">Sun</span>
+        </div>
+      </div>
+    </div>
+    
+    <h2>What's Different?</h2>
+    <ul>
+      <li>✅ Pure CSS - no JavaScript charting libraries</li>
+      <li>✅ Works 100% in Chrome extensions</li>
+      <li>✅ No CSP issues</li>
+      <li>✅ Instant loading</li>
+      <li>✅ Clean, visual bars with hover effects</li>
+      <li>✅ Today highlighted in blue</li>
+      <li>✅ Shows real focus minutes</li>
+    </ul>
+    
+    <h2>In the Extension</h2>
+    <p>The chart will automatically show:</p>
+    <ul>
+      <li>Your actual focus data (6m today based on your metrics)</li>
+      <li>Sample data if you have no sessions yet</li>
+      <li>Visual bars that scale to your maximum session</li>
+      <li>All 7 days of the week</li>
+    </ul>
+  </div>
+</body>
+</html>

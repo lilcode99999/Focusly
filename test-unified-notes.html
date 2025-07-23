@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Unified Note System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Unified Note System Test</h1>
+  
+  <div class="test-section">
+    <h2>Test Formatted Notes</h2>
+    <textarea id="formattedNoteContent" rows="8" placeholder="Enter formatted note content...">## Weekly Review
+
+This week I focused on **productivity improvements** and *task management*.
+
+### Key Accomplishments:
+1. Completed project milestone
+2. Fixed critical bugs
+3. Improved documentation
+
+### Tasks for Next Week:
+- Review code architecture
+- Plan new features
+- Schedule team meeting
+
+#productivity #review #planning</textarea>
+    <button id="createFormattedNote">Create Formatted Note</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Note Features</h2>
+    <button id="testSharing">Test Sharing Functions</button>
+    <button id="testExport">Test Export Functions</button>
+    <button id="testPlatformData">Check Platform-Ready Data</button>
+    <button id="createFocusNote">Create Focus Session Note</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Session Integration</h2>
+    <button id="createSession">Create Test Session</button>
+    <button id="checkSessionHistory">Check Session History</button>
+    <button id="linkSessionToNote">Link Session to Note</button>
+  </div>
+  
+  <div id="log" class="log"></div>
+  
+  <script>
+    function log(message) {
+      const logEl = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      logEl.textContent = `[${timestamp}] ${message}\n` + logEl.textContent;
+    }
+    
+    // Create formatted note
+    document.getElementById('createFormattedNote').addEventListener('click', async () => {
+      const content = document.getElementById('formattedNoteContent').value;
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      
+      const formattedNote = {
+        id: `note-${Date.now()}`,
+        content: content,
+        htmlContent: convertToHTML(content),
+        type: 'formatted',
+        storageType: 'local',
+        timestamp: Date.now(),
+        category: 'general',
+        title: 'Weekly Review',
+        pinned: false,
+        public: false,
+        metadata: {
+          hasFormatting: true,
+          formatTypes: ['headers', 'bold', 'italic', 'lists'],
+          platform_ready: true
+        }
+      };
+      
+      notes.unshift(formattedNote);
+      await chrome.storage.local.set({ notes });
+      log('Created formatted note with rich content');
+    });
+    
+    // Test sharing functions
+    document.getElementById('testSharing').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      if (notes.length === 0) {
+        log('No notes to share. Create a note first.');
+        return;
+      }
+      
+      const note = notes[0];
+      
+      // Test copy as text
+      const textContent = note.content;
+      log(`Text to copy: "${textContent.substring(0, 50)}..."`);
+      
+      // Test copy as markdown
+      const markdown = note.content; // Already in markdown format
+      log(`Markdown to copy: "${markdown.substring(0, 50)}..."`);
+      
+      // Test shareable link
+      const shareId = `note-${note.id || note.timestamp}`;
+      const shareLink = `https://smart-bookmarks.app/shared/${shareId}`;
+      log(`Shareable link: ${shareLink}`);
+      
+      // Test public/private toggle
+      note.public = !note.public;
+      notes[0] = note;
+      await chrome.storage.local.set({ notes });
+      log(`Note visibility changed to: ${note.public ? 'Public' : 'Private'}`);
+    });
+    
+    // Test export functions
+    document.getElementById('testExport').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      if (notes.length === 0) {
+        log('No notes to export. Create a note first.');
+        return;
+      }
+      
+      const note = notes[0];
+      const title = note.title || 'untitled-note';
+      
+      // Test .txt export
+      const txtContent = note.content;
+      log(`Export as ${title}.txt (${txtContent.length} characters)`);
+      
+      // Test .md export
+      const mdContent = note.content;
+      log(`Export as ${title}.md (${mdContent.length} characters)`);
+      
+      // Test bulk export
+      const allNotes = notes.map(n => `# ${n.title || 'Untitled'}\n\n${n.content}\n\n---\n`).join('\n');
+      log(`Bulk export: ${notes.length} notes (${allNotes.length} total characters)`);
+    });
+    
+    // Test platform-ready data
+    document.getElementById('testPlatformData').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      if (notes.length === 0) {
+        log('No notes found.');
+        return;
+      }
+      
+      const platformData = {
+        notion: {
+          database_id: 'future-notion-db-id',
+          properties: {
+            title: notes[0].title,
+            content: notes[0].content,
+            tags: extractTags(notes[0].content),
+            category: notes[0].category,
+            created: notes[0].timestamp,
+            modified: notes[0].lastEdited
+          }
+        },
+        obsidian: {
+          vault: 'Smart Bookmarks',
+          path: `/Notes/${notes[0].title}.md`,
+          frontmatter: {
+            tags: extractTags(notes[0].content),
+            created: new Date(notes[0].timestamp).toISOString(),
+            category: notes[0].category
+          },
+          content: notes[0].content
+        },
+        googleDocs: {
+          title: notes[0].title,
+          mimeType: 'application/vnd.google-apps.document',
+          content: notes[0].htmlContent || notes[0].content
+        }
+      };
+      
+      log('Platform-ready data structure:');
+      log(JSON.stringify(platformData, null, 2));
+    });
+    
+    // Create focus session note
+    document.getElementById('createFocusNote').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      
+      const focusNote = {
+        id: `note-${Date.now()}`,
+        content: `## Focus Session Summary
+
+**Duration:** 25 minutes
+**Time:** ${new Date().toLocaleTimeString()}
+
+### What I worked on:
+- Completed email responses
+- Reviewed project documentation
+- Fixed bug in authentication flow
+
+### Distractions encountered:
+- Social media notification (blocked)
+- Colleague interruption (handled quickly)
+
+### Next session goals:
+- Continue with code review
+- Write unit tests
+
+#focus #productivity #deepwork`,
+        type: 'focus',
+        storageType: 'local',
+        timestamp: Date.now(),
+        category: 'focus',
+        title: 'Focus Session - ' + new Date().toLocaleDateString(),
+        sessionId: Date.now(),
+        metadata: {
+          sessionDuration: 25,
+          focusScore: 85,
+          distractionCount: 2
+        }
+      };
+      
+      notes.unshift(focusNote);
+      await chrome.storage.local.set({ notes });
+      log('Created focus session note with session metadata');
+    });
+    
+    // Create test session
+    document.getElementById('createSession').addEventListener('click', async () => {
+      const { focusAnalytics = { sessions: [] } } = await chrome.storage.local.get('focusAnalytics');
+      
+      const newSession = {
+        timestamp: Date.now(),
+        duration: 25,
+        completed: true,
+        focusScore: 90
+      };
+      
+      focusAnalytics.sessions.push(newSession);
+      await chrome.storage.local.set({ focusAnalytics });
+      log('Created test focus session (25 min)');
+    });
+    
+    // Check session history
+    document.getElementById('checkSessionHistory').addEventListener('click', async () => {
+      const { focusAnalytics = { sessions: [] } } = await chrome.storage.local.get('focusAnalytics');
+      
+      const todaySessions = focusAnalytics.sessions.filter(session => {
+        const sessionDate = new Date(session.timestamp);
+        const today = new Date();
+        return sessionDate.toDateString() === today.toDateString();
+      });
+      
+      log(`Today's sessions: ${todaySessions.length}`);
+      todaySessions.forEach((session, i) => {
+        const time = new Date(session.timestamp).toLocaleTimeString();
+        log(`  ${i + 1}. ${time} - ${session.duration} minutes`);
+      });
+    });
+    
+    // Helper functions
+    function extractTags(content) {
+      const tagRegex = /#[\w-]+/g;
+      const matches = content.match(tagRegex) || [];
+      return [...new Set(matches)];
+    }
+    
+    function convertToHTML(markdown) {
+      return markdown
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+        .replace(/\n/g, '<br>');
+    }
+    
+    log('Unified note system test page loaded');
+    log('Click buttons to test various features');
+  </script>
+</body>
+</html>

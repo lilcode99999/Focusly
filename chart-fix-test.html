@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chart Fix Test - Smart Bookmarks</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .test-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .chart-container {
+      min-height: 160px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .warning { background: #fff3cd; color: #856404; }
+    
+    button {
+      padding: 10px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    
+    button:hover {
+      background: #1d4ed8;
+    }
+    
+    .code {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Chart Fix Test Suite</h1>
+    
+    <div class="test-section">
+      <h2>📋 Debugging Steps</h2>
+      <ol>
+        <li>Open the Smart Bookmarks extension popup</li>
+        <li>Navigate to the Focus tab</li>
+        <li>Open Chrome DevTools (F12) → Console</li>
+        <li>Run: <code>window.forceUpdateChart()</code></li>
+        <li>Check console logs for errors</li>
+        <li>If no chart appears, click "Force Update Chart" button in the UI</li>
+      </ol>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 1: Basic HTML Chart <span class="status success" id="test1Status">✓ Should Work</span></h2>
+      <p>This test verifies that a simple HTML/CSS chart renders correctly:</p>
+      
+      <div class="chart-container" id="test1Chart"></div>
+      <button onclick="renderTest1()">Render Test 1</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 2: Extension Chart Code <span class="status warning" id="test2Status">Testing...</span></h2>
+      <p>This test uses the exact code from the extension:</p>
+      
+      <div class="chart-container">
+        <div class="chart-bars" id="focusChartInsight" style="width: 100%; height: 100%;"></div>
+      </div>
+      <button onclick="renderTest2()">Render Test 2</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 3: Text Fallback <span class="status success" id="test3Status">✓ Always Works</span></h2>
+      <p>If visual charts fail, this text-based chart always works:</p>
+      
+      <div class="chart-container" id="test3Chart"></div>
+      <button onclick="renderTest3()">Render Test 3</button>
+    </div>
+
+    <div class="test-section">
+      <h2>🐛 Console Commands for Extension</h2>
+      <p>Run these commands in the extension popup console:</p>
+      <div class="code">
+// 1. Check if app exists
+console.log('App exists:', !!window.smartBookmarksApp);
+
+// 2. Check chart containers
+console.log('Chart container:', document.getElementById('focusChartInsight'));
+
+// 3. Force update chart
+window.smartBookmarksApp.updateFocusChart();
+
+// 4. Check user data
+console.log('User data:', window.smartBookmarksApp.userData);
+
+// 5. Manually inject test chart
+document.getElementById('focusChartInsight').innerHTML = `
+  <div style="padding: 20px; background: yellow; color: black;">
+    TEST CHART - If you see this yellow box, the container works!
+  </div>
+`;
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>✅ Working Solution</h2>
+      <p>If all else fails, copy this code into the extension console:</p>
+      <div class="code">
+// EMERGENCY FIX - Inject working chart directly
+const container = document.getElementById('focusChartInsight');
+if (container) {
+  container.style.display = 'block';
+  container.style.minHeight = '140px';
+  container.innerHTML = `
+    <div style="width: 100%; height: 120px; display: flex; align-items: flex-end; gap: 4px; padding: 10px;">
+      <div style="flex: 1; height: 50%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+      <div style="flex: 1; height: 33%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+      <div style="flex: 1; height: 67%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+      <div style="flex: 1; height: 5%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+      <div style="flex: 1; height: 100%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+      <div style="flex: 1; height: 83%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+      <div style="flex: 1; height: 7%; background: #2563eb; border-radius: 4px 4px 0 0;"></div>
+    </div>
+  `;
+  console.log('✅ Emergency chart injected!');
+} else {
+  console.error('❌ Chart container not found!');
+}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Test 1: Basic HTML Chart
+    function renderTest1() {
+      const container = document.getElementById('test1Chart');
+      container.innerHTML = `
+        <div style="width: 100%; height: 120px; display: flex; align-items: flex-end; gap: 4px;">
+          <div style="flex: 1; height: 50%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+          <div style="flex: 1; height: 33%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+          <div style="flex: 1; height: 67%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+          <div style="flex: 1; height: 5%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+          <div style="flex: 1; height: 100%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+          <div style="flex: 1; height: 83%; background: #93bbfc; border-radius: 4px 4px 0 0;"></div>
+          <div style="flex: 1; height: 10%; background: #2563eb; border-radius: 4px 4px 0 0;"></div>
+        </div>
+      `;
+      document.getElementById('test1Status').textContent = '✓ Rendered';
+      document.getElementById('test1Status').className = 'status success';
+    }
+
+    // Test 2: Extension Chart Code
+    function renderTest2() {
+      const container = document.getElementById('focusChartInsight');
+      const testData = [45, 30, 60, 0, 90, 75, 6];
+      const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const maxMinutes = Math.max(...testData, 60);
+      
+      const chartHTML = `
+        <div style="width: 100%; height: 140px; display: block; position: relative;">
+          <div style="display: flex; align-items: flex-end; height: 100px; gap: 4px; padding: 0 10px;">
+            ${testData.map((minutes, i) => {
+              const height = Math.max(5, (minutes / maxMinutes) * 90);
+              const isToday = i === 6;
+              return `
+                <div style="flex: 1; background: ${isToday ? '#2563eb' : '#93bbfc'}; 
+                            height: ${height}%; 
+                            border-radius: 4px 4px 0 0;
+                            position: relative;">
+                  <div style="position: absolute; 
+                              top: -18px; 
+                              left: 0; 
+                              right: 0; 
+                              text-align: center; 
+                              font-size: 10px; 
+                              color: #333;
+                              font-weight: ${isToday ? 'bold' : 'normal'};">
+                    ${minutes}m
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div style="display: flex; gap: 4px; padding: 0 10px; margin-top: 5px;">
+            ${dayLabels.map((label, i) => `
+              <div style="flex: 1; 
+                          text-align: center; 
+                          font-size: 11px; 
+                          color: ${i === 6 ? '#2563eb' : '#666'};
+                          font-weight: ${i === 6 ? 'bold' : 'normal'};">
+                ${label}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      
+      container.innerHTML = chartHTML;
+      document.getElementById('test2Status').textContent = '✓ Rendered';
+      document.getElementById('test2Status').className = 'status success';
+    }
+
+    // Test 3: Text Fallback
+    function renderTest3() {
+      const container = document.getElementById('test3Chart');
+      const testData = [45, 30, 60, 0, 90, 75, 6];
+      const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      
+      container.innerHTML = `
+        <div style="padding: 10px; font-family: monospace; font-size: 12px; line-height: 1.5;">
+          <div style="margin-bottom: 10px; font-weight: bold;">📊 Weekly Focus Chart</div>
+          ${testData.map((minutes, i) => {
+            const bars = '█'.repeat(Math.floor(minutes / 10)) || '░';
+            const label = dayLabels[i];
+            const isToday = i === 6;
+            return `<div style="${isToday ? 'color: #2563eb; font-weight: bold;' : ''}">
+              ${label}: ${bars} ${minutes}m
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+      document.getElementById('test3Status').textContent = '✓ Rendered';
+      document.getElementById('test3Status').className = 'status success';
+    }
+
+    // Auto-render Test 1 on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTest1();
+    });
+  </script>
+</body>
+</html>

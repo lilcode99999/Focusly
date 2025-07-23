@@ -1,0 +1,41 @@
+{
+  "name": "smart-bookmarks-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension with AI-powered semantic search for bookmarks",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:extension && npm run build:server",
+    "build:extension": "echo 'Extension build complete'",
+    "build:server": "cd mcp-server && npm install",
+    "dev": "npm run dev:server",
+    "dev:server": "cd mcp-server && npm run dev",
+    "start:server": "cd mcp-server && npm start",
+    "install:server": "cd mcp-server && npm install",
+    "clean": "rm -rf dist/ && cd mcp-server && rm -rf node_modules/",
+    "test:db": "node supabase/test-connection.js",
+    "verify:db": "node supabase/verify-schema.js",
+    "stripe:setup": "node stripe/setup-products.js",
+    "stripe:test": "node stripe/test-integration.js",
+    "deploy:webhook": "./stripe/deploy-webhook.sh"
+  },
+  "keywords": [
+    "chrome-extension",
+    "bookmarks",
+    "ai",
+    "semantic-search",
+    "mcp"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@stripe/stripe-js": "^2.2.0",
+    "@supabase/supabase-js": "^2.50.4",
+    "dotenv": "^16.3.1",
+    "stripe": "^14.9.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.246",
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3"
+  }
+}

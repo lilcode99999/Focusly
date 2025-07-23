@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Welcome to Pro!</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .success-container {
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+    
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    p {
+      font-size: 1.25rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+      animation: fadeIn 0.5s ease-out 0.2s both;
+    }
+    
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 30px;
+      animation: scaleIn 0.5s ease-out 0.3s both;
+    }
+    
+    .checkmark svg {
+      width: 50px;
+      height: 50px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: draw 0.5s ease-out 0.5s forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes scaleIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .loader {
+      font-size: 0.875rem;
+      opacity: 0.7;
+      animation: fadeIn 0.5s ease-out 0.4s both;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="checkmark">
+      <svg viewBox="0 0 24 24">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+    </div>
+    <h1>Welcome to Pro! 🎉</h1>
+    <p>Your payment was successful.</p>
+    <p class="loader">Activating your Pro features...</p>
+  </div>
+  
+  <script>
+    // Unlock Pro features in storage
+    chrome.storage.local.set({ isPro: true }, () => {
+      console.log('Pro features unlocked!');
+      
+      // Close this window after 3 seconds
+      setTimeout(() => {
+        window.close();
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

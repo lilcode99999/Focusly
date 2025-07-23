@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Notification System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background: #f0f0f0;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #e0e0e0;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .log-output {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Smart Bookmarks - Notification System Test</h1>
+  
+  <div class="test-section">
+    <h2>DOM Element Tests</h2>
+    <button id="checkDOMBtn">Check DOM Elements</button>
+    <button id="testPanelBtn">Test Panel Toggle</button>
+    <button id="addNotificationBtn">Add Test Notification</button>
+    <button id="clearNotificationsBtn">Clear All Notifications</button>
+    <div id="domLog" class="log-output"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Visual Test</h2>
+    <p>Click below to open the extension popup in a new window to visually test the notification system:</p>
+    <button id="openPopupBtn">Open Extension Popup</button>
+  </div>
+
+  <script>
+    function log(message, isError = false) {
+      const logDiv = document.getElementById('domLog');
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = isError ? '❌' : '✅';
+      logDiv.innerHTML += `${timestamp} ${prefix} ${message}\n`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function checkDOMElements() {
+      log('Checking DOM elements...');
+      
+      // Open popup and check elements
+      chrome.runtime.getURL('popup.html');
+      
+      // Since we can't directly access the popup DOM from here,
+      // we'll send a message to the background script to check
+      chrome.runtime.sendMessage({
+        action: 'testNotificationDOM'
+      }, response => {
+        if (response && response.success) {
+          log('DOM elements check passed');
+        } else {
+          log('DOM elements check failed: ' + (response?.error || 'Unknown error'), true);
+        }
+      });
+    }
+
+    function testNotificationPanel() {
+      log('Testing notification panel toggle...');
+      // This would require interaction with the actual popup
+      log('Please manually test the notification panel toggle in the popup');
+    }
+
+    function testAddNotification() {
+      log('Adding test notification...');
+      
+      const testNotification = {
+        id: 'test-' + Date.now(),
+        title: 'Test Notification',
+        message: 'This is a test notification to verify the system works correctly',
+        iconType: 'info',
+        timestamp: Date.now(),
+        read: false
+      };
+      
+      chrome.runtime.sendMessage({
+        action: 'addNotification',
+        notification: testNotification
+      }, response => {
+        if (response && response.success) {
+          log('Test notification added successfully');
+        } else {
+          log('Failed to add test notification', true);
+        }
+      });
+    }
+
+    function testClearNotifications() {
+      log('Clearing all notifications...');
+      
+      chrome.runtime.sendMessage({
+        action: 'clearAllNotifications'
+      }, response => {
+        if (response && response.success) {
+          log('All notifications cleared successfully');
+        } else {
+          log('Failed to clear notifications', true);
+        }
+      });
+    }
+
+    function openPopup() {
+      // Get the extension ID
+      const extensionId = chrome.runtime.id;
+      const popupUrl = `chrome-extension://${extensionId}/popup.html`;
+      
+      // Open popup in a new window for testing
+      window.open(popupUrl, 'extension-popup', 'width=400,height=600');
+      
+      log('Popup opened in new window. Check for:');
+      log('1. Notification button in header with badge');
+      log('2. Click notification button to open panel');
+      log('3. Panel should be centered and within popup bounds');
+      log('4. Clear All button should work');
+      log('5. Individual notification close buttons should work');
+    }
+
+    // Set up event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('checkDOMBtn').addEventListener('click', checkDOMElements);
+      document.getElementById('testPanelBtn').addEventListener('click', testNotificationPanel);
+      document.getElementById('addNotificationBtn').addEventListener('click', testAddNotification);
+      document.getElementById('clearNotificationsBtn').addEventListener('click', testClearNotifications);
+      document.getElementById('openPopupBtn').addEventListener('click', openPopup);
+    });
+
+    // Initial log
+    log('Notification system test page loaded');
+  </script>
+</body>
+</html>

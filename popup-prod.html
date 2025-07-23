@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <title>Smart Bookmarks</title>
+  <style>
+    /* Premium Design System */
+    :root {
+      /* Professional Colors */
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #3b82f6;
+      --accent: #0ea5e9;
+      --success: #059669;
+      --warning: #d97706;
+      --error: #dc2626;
+      
+      /* Neutrals */
+      --white: #ffffff;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      
+      /* Professional Gradients */
+      --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      --gradient-success: linear-gradient(135deg, var(--success) 0%, var(--accent) 100%);
+      --gradient-card: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+      
+      /* Dark Mode */
+      --bg-primary: var(--white);
+      --bg-secondary: var(--gray-50);
+      --bg-tertiary: var(--gray-100);
+      --text-primary: var(--gray-900);
+      --text-secondary: var(--gray-600);
+      --text-tertiary: var(--gray-400);
+      --border: var(--gray-200);
+      --border-light: var(--gray-100);
+      
+      /* Spacing */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      
+      /* Typography */
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      
+      /* Effects */
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      
+      --radius-sm: 0.375rem;
+      --radius: 0.5rem;
+      --radius-md: 0.75rem;
+      --radius-lg: 1rem;
+      --radius-xl: 1.5rem;
+      
+      --transition: all 0.15s ease-out;
+      --transition-slow: all 0.3s ease-out;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: var(--gray-900);
+        --bg-secondary: var(--gray-800);
+        --bg-tertiary: var(--gray-700);
+        --text-primary: var(--white);
+        --text-secondary: var(--gray-300);
+        --text-tertiary: var(--gray-500);
+        --border: var(--gray-700);
+        --border-light: var(--gray-600);
+        --gradient-card: linear-gradient(145deg, var(--gray-800) 0%, var(--gray-700) 100%);
+      }
+    }
+
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 380px;
+      height: 580px;
+      font-family: var(--font-family);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+
+    /* App Layout */
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      padding: var(--space-4) var(--space-4) var(--space-3);
+      background: var(--gradient-primary);
+      color: white;
+      position: relative;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .header-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      backdrop-filter: blur(8px);
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    
+    .header-btn {
+      position: relative;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--error);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: 0.125rem 0.25rem;
+      border-radius: 999px;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    /* Tab Navigation */
+    .tabs {
+      display: flex;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      padding: var(--space-3) var(--space-2);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      background: var(--bg-primary);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+
+    .tab-icon {
+      font-size: 1.125rem;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .tab-content {
+      height: 100%;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .tab-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .tab-content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .tab-content::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--gradient-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .card-action {
+      color: var(--text-tertiary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-1);
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .card-action:hover {
+      color: var(--primary);
+      background: var(--bg-secondary);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: var(--gradient-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Timer */
+    .timer-container {
+      text-align: center;
+      padding: var(--space-4) 0 var(--space-6) 0;
+    }
+    
+    /* Timer States */
+    .timer-container.focus-mode {
+      --timer-color: var(--primary);
+    }
+    
+    .timer-container.break-mode {
+      --timer-color: var(--success);
+    }
+    
+    .timer-container.paused {
+      --timer-color: var(--warning);
+    }
+
+    .state-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-2);
+      transition: var(--transition);
+    }
+    
+    .timer-container.focus-mode .state-label {
+      color: var(--primary);
+    }
+    
+    .timer-container.break-mode .state-label {
+      color: var(--success);
+    }
+    
+    .timer-container.paused .state-label {
+      color: var(--warning);
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-6);
+      display: block;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .timer-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .timer-btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .timer-btn.primary {
+      background: var(--gradient-primary);
+      color: white;
+    }
+
+    .timer-btn.primary:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .timer-btn.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .timer-btn.secondary:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .timer-presets {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: center;
+      margin-top: var(--space-4);
+    }
+
+    .preset-btn {
+      padding: var(--space-2) var(--space-3);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .preset-btn:hover,
+    .preset-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .break-actions {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: center;
+      margin-top: var(--space-4);
+    }
+    
+    .break-actions .btn {
+      font-size: 0.875rem;
+      padding: var(--space-2) var(--space-4);
+    }
+
+    /* Notification Panel */
+    .notification-panel {
+      position: absolute;
+      top: 60px;
+      right: 10px;
+      width: 320px;
+      max-height: 400px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-xl);
+      z-index: 1000;
+      overflow: hidden;
+    }
+    
+    .notification-header {
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .notification-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .btn-icon {
+      background: transparent;
+      border: none;
+      padding: var(--space-2);
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+    
+    .btn-icon:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .notification-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+    
+    .notification-item {
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .notification-item:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .notification-item.unread {
+      background: var(--bg-secondary);
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-1);
+    }
+    
+    .notification-message {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-1);
+    }
+    
+    .notification-time {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+    }
+    
+    .notification-empty {
+      padding: var(--space-8);
+      text-align: center;
+      color: var(--text-tertiary);
+    }
+    
+    .notification-empty svg {
+      opacity: 0.3;
+      margin-bottom: var(--space-4);
+    }
+    
+    /* Progress Circle */
+    .progress-circle {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+    }
+
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring-bg {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 8;
+    }
+
+    .progress-ring-progress {
+      fill: none;
+      stroke: url(#gradient);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: var(--space-3) var(--space-4);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .btn-ghost {
+      background: none;
+      color: var(--text-secondary);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      transition: var(--transition);
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    /* Toggle Switch */
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .toggle.active {
+      background: var(--primary);
+    }
+
+    .toggle::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toggle.active::before {
+      transform: translateX(20px);
+    }
+
+    /* Setting Row */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info h4 {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .setting-info p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Chart */
+    .chart-container {
+      min-height: 160px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin-top: var(--space-4);
+      position: relative;
+      overflow: visible;
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: end;
+      height: 100%;
+      gap: 2px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: var(--gradient-primary);
+      border-radius: 2px 2px 0 0;
+      min-height: 4px;
+      transition: var(--transition-slow);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-3);
+      opacity: 0.6;
+    }
+
+    .empty-state h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-state p {
+      font-size: 0.875rem;
+      margin-bottom: var(--space-4);
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
+
+    /* Premium Badge */
+    .premium-badge {
+      background: var(--gradient-primary);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Bookmark Items */
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .bookmark-item:hover {
+      background: var(--bg-secondary);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .bookmark-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .bookmark-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .bookmark-title {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bookmark-url {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bookmark-action {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: var(--text-tertiary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .bookmark-action:hover {
+      background: var(--bg-tertiary);
+      color: var(--primary);
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: var(--space-4);
+      right: var(--space-4);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-xl);
+      z-index: 1000;
+      max-width: 300px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .notification.success {
+      border-color: var(--success);
+    }
+
+    .notification.error {
+      border-color: var(--error);
+    }
+
+    .notification.warning {
+      border-color: var(--warning);
+    }
+    
+    /* Note Editing Styles */
+    .note-item:hover {
+      background: var(--bg-secondary) !important;
+      border-color: var(--primary) !important;
+    }
+    
+    .note-item.pinned {
+      order: -1;
+    }
+    
+    .note-edit-modal {
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .tag {
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .tag:hover {
+      background: var(--primary) !important;
+      color: white !important;
+    }
+    
+    /* Text formatting in notes */
+    .note-content strong {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .note-content em {
+      font-style: italic;
+    }
+    
+    /* Auto-save animation */
+    @keyframes slideIn {
+      from {
+        transform: translateY(-10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    /* CSS-Based Visual Chart Styles */
+    .focus-chart-text {
+      padding: var(--space-3);
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+    }
+    
+    .focus-chart-text h4 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 var(--space-3) 0;
+    }
+    
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 120px;
+      margin-bottom: var(--space-2);
+    }
+    
+    .chart-day {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .bar-container {
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+    }
+    
+    .bar {
+      width: 100%;
+      background: var(--primary-light);
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s ease;
+      position: relative;
+      min-height: 4px;
+    }
+    
+    .bar.today {
+      background: var(--primary);
+    }
+    
+    .bar:hover {
+      opacity: 0.8;
+    }
+    
+    .bar-value {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    
+    .day-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    
+    .day-label.today {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    /* Enhanced Chart Styles */
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-3);
+    }
+    
+    .chart-trend-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 0.75rem;
+    }
+    
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--error); }
+    .trend-steady { color: var(--text-secondary); }
+    
+    .chart-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    
+    .metric-card {
+      background: var(--bg-primary);
+      padding: var(--space-3);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      border: 1px solid var(--border-light);
+    }
+    
+    .metric-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .metric-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: var(--space-1);
+    }
+    
+    .chart-encouragement {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: var(--space-3);
+      padding: var(--space-3);
+      background: var(--bg-primary);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+    
+    /* Button hover and active states */
+    .format-btn:hover {
+      background: var(--bg-tertiary) !important;
+      transform: translateY(-1px);
+    }
+    
+    /* Pro Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal-container {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+    
+    @keyframes modalSlideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-6);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .modal-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      padding: var(--space-2);
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    
+    .modal-close:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .modal-content {
+      padding: var(--space-6);
+    }
+    
+    .modal-description {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+      text-align: center;
+    }
+    
+    .preview-section {
+      background: var(--bg-secondary);
+      padding: var(--space-5);
+      border-radius: var(--radius);
+      margin-bottom: var(--space-6);
+    }
+    
+    .preview-section h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 var(--space-3) 0;
+    }
+    
+    .preview-input-group {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    
+    .preview-input-group input {
+      flex: 1;
+      padding: var(--space-3);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
+    
+    .preview-btn {
+      padding: var(--space-3) var(--space-5);
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .preview-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    
+    .preview-result {
+      padding: var(--space-3);
+      background: var(--success);
+      color: white;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .pro-features {
+      margin-bottom: var(--space-6);
+    }
+    
+    .pro-features h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 var(--space-4) 0;
+    }
+    
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .feature-list svg {
+      color: var(--success);
+      flex-shrink: 0;
+    }
+    
+    .modal-cta {
+      text-align: center;
+    }
+    
+    .upgrade-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      width: 100%;
+      padding: var(--space-4) var(--space-6);
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: var(--space-3);
+    }
+    
+    .upgrade-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .maybe-later-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      padding: var(--space-2);
+      transition: color 0.2s;
+    }
+    
+    .maybe-later-btn:hover {
+      color: var(--text-primary);
+      text-decoration: underline;
+    }
+    
+    .modal-disclaimer {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-top: var(--space-3);
+    }
+    
+    /* In-Extension Payment Form Styles */
+    .payment-form-container {
+      padding: var(--space-6);
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .payment-form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+    
+    .payment-form-header h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      padding: var(--space-2);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    
+    .back-btn:hover {
+      background: var(--bg-secondary);
+    }
+    
+    #payment-form {
+      margin-bottom: var(--space-4);
+    }
+    
+    .payment-element {
+      padding: var(--space-4);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-height: 200px;
+      margin-bottom: var(--space-4);
+    }
+    
+    .payment-message {
+      color: var(--error);
+      font-size: 0.875rem;
+      margin-bottom: var(--space-3);
+      display: none;
+    }
+    
+    .payment-message.show {
+      display: block;
+    }
+    
+    .submit-payment-btn {
+      width: 100%;
+      padding: var(--space-4);
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      transition: all 0.2s;
+    }
+    
+    .submit-payment-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .submit-payment-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .spinner {
+      display: inline-flex;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    .payment-security {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .payment-security svg {
+      color: var(--success);
+    }
+    
+    .format-btn:active {
+      transform: translateY(0);
+      background: var(--primary) !important;
+      color: white !important;
+    }
+    
+    .format-btn.active {
+      background: var(--primary) !important;
+      color: white !important;
+      border-color: var(--primary) !important;
+    }
+    
+    .share-btn:hover, .save-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .share-btn:active, .save-btn:active {
+      transform: translateY(0);
+    }
+    
+    /* Success flash animation */
+    @keyframes successFlash {
+      0% { background: var(--success); }
+      100% { background: var(--primary); }
+    }
+    
+    .save-success {
+      animation: successFlash 0.5s ease;
+    }
+    
+    /* Close button styles */
+    .close-btn:hover {
+      color: var(--text-primary) !important;
+      background: var(--bg-tertiary) !important;
+      border-radius: var(--radius-sm);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Smart Bookmarks</span>
+        </div>
+        <div class="header-actions">
+          <button class="header-btn" id="notificationsBtn" title="Notifications">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+          <button class="header-btn" id="accountBtn" title="Account">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notificationPanel" style="display: none;">
+      <div class="notification-header">
+        <h3>Notifications</h3>
+        <button class="btn-icon" id="clearAllNotifications" title="Clear all">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18"></path>
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="notification-list" id="notificationList">
+        <!-- Notifications will be added here -->
+      </div>
+      <div class="notification-empty" id="notificationEmpty" style="display: none;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <p>No notifications</p>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="focus">
+        <div class="tab-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12,6 12,12 16,14"></polyline>
+          </svg>
+        </div>
+        <span>Focus</span>
+      </button>
+      <button class="tab" data-tab="notes">
+        <div class="tab-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <span>Notes</span>
+      </button>
+      <button class="tab" data-tab="ai">
+        <div class="tab-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+            <path d="M12 8v8"></path>
+            <path d="M8 12h8"></path>
+            <circle cx="12" cy="12" r="2"></circle>
+          </svg>
+        </div>
+        <span>AI</span>
+      </button>
+      <button class="tab" data-tab="hub">
+        <div class="tab-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          </svg>
+        </div>
+        <span>Bookmarks</span>
+      </button>
+      <button class="tab" data-tab="settings">
+        <div class="tab-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </div>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- Content -->
+    <main class="content">
+      <!-- Bookmarks Tab -->
+      <div class="tab-content" id="hubTab">
+        <!-- Search Section -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+              </svg>
+              Search Bookmarks
+            </h3>
+            <button class="btn btn-secondary" disabled style="opacity: 0.6; cursor: not-allowed; display: flex; align-items: center; gap: var(--space-1); padding: var(--space-2) var(--space-3); font-size: 0.75rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                <path d="M12 8v8"></path>
+                <path d="M8 12h8"></path>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+              AI Organize
+            </button>
+          </div>
+          <div style="padding: 0 var(--space-5) var(--space-4);">
+            <input type="text" class="form-input" placeholder="Search your bookmarks..." id="bookmarkSearch">
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88"></polygon>
+              </svg>
+              Quick Actions
+            </h3>
+          </div>
+          <div style="display: flex; gap: var(--space-3); padding: 0 var(--space-5) var(--space-4);">
+            <button class="btn btn-primary" id="saveCurrentPage">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Save Page
+            </button>
+            <button class="btn btn-secondary" id="openBookmarksManager">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+              </svg>
+              Manage
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2v20M2 12h20"></path>
+              </svg>
+              Search Results
+            </h3>
+            <button class="card-action" id="refreshBookmarks" title="Clear Search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div id="recentBookmarks">
+            <!-- Will be populated with search results -->
+          </div>
+        </div>
+
+        <!-- AI Tagging Pro Feature -->
+        <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; border: none; margin-bottom: var(--space-4);" data-pro="true">
+          <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <div>
+              <h3 style="color: white; margin-bottom: var(--space-2);">
+                AI-Powered Smart Tags
+                <span class="premium-badge" style="margin-left: var(--space-2);">PRO</span>
+              </h3>
+              <p style="opacity: 0.9; font-size: 0.875rem;">Automatically organize bookmarks with AI-generated tags</p>
+            </div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Focus Tab -->
+      <div class="tab-content active" id="focusTab">
+        <!-- Session State Header -->
+        <div style="text-align: center; margin-bottom: var(--space-4);">
+          <h2 id="sessionStateLabel" style="font-size: 1.25rem; font-weight: 600; color: var(--primary); margin-bottom: var(--space-2);">Focus Mode</h2>
+          <p id="sessionCounter" style="font-size: 0.875rem; color: var(--text-secondary);">Today's Progress: 0m / 2h</p>
+          <!-- Progress bar -->
+          <div style="width: 100%; height: 8px; background: var(--border); border-radius: 4px; margin-top: var(--space-3); overflow: hidden;">
+            <div id="goalProgressBar" style="height: 100%; background: var(--gradient-primary); width: 0%; transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="timer-container">
+            <div class="progress-circle">
+              <svg class="progress-ring" width="120" height="120">
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color: #2563eb;"/>
+                    <stop offset="100%" style="stop-color: #3b82f6;"/>
+                  </linearGradient>
+                  <linearGradient id="gradient-break" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color: #059669;"/>
+                    <stop offset="100%" style="stop-color: #10b981;"/>
+                  </linearGradient>
+                </defs>
+                <circle class="progress-ring-bg" cx="60" cy="60" r="50"></circle>
+                <circle class="progress-ring-progress" cx="60" cy="60" r="50" 
+                        stroke-dasharray="314" stroke-dashoffset="314" id="progressCircle"></circle>
+              </svg>
+            </div>
+            
+            <div class="state-label" id="stateLabel">Ready to Focus</div>
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            
+            <div class="timer-controls">
+              <button class="timer-btn secondary" id="decreaseBtn" title="Decrease 1 minute">
+                <span>-</span>
+              </button>
+              <button class="timer-btn primary" id="playPauseBtn">
+                <span id="playPauseIcon">▶</span>
+              </button>
+              <button class="timer-btn secondary" id="increaseBtn" title="Increase 1 minute">
+                <span>+</span>
+              </button>
+            </div>
+
+            <button class="btn btn-ghost" id="resetBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6"></path>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              Reset
+            </button>
+
+            <div class="timer-presets" id="focusPresets">
+              <button class="preset-btn" data-minutes="15">15m</button>
+              <button class="preset-btn active" data-minutes="25">25m</button>
+              <button class="preset-btn" data-minutes="45">45m</button>
+              <button class="preset-btn" data-minutes="60">60m</button>
+            </div>
+            
+            <div class="break-actions" id="breakActions" style="display: none;">
+              <button class="btn btn-secondary" id="endBreakBtn">End Break Early</button>
+              <button class="btn btn-secondary" id="extendBreakBtn">+5 Minutes</button>
+            </div>
+          </div>
+        </div>
+
+        
+        <!-- Pro Features -->
+        <div id="websiteBlockingCard" class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; border: none;" data-pro="true" data-pro-feature="website-blocking">
+          <div class="card-header" style="cursor: pointer;">
+            <h3 class="card-title" style="color: white;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18.364 5.636a9 9 0 1 1-12.728 0"></path>
+                <path d="M12 3v9"></path>
+              </svg>
+              Website Blocking
+              <span class="premium-badge" style="margin-left: var(--space-2);">PRO</span>
+            </h3>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </div>
+          <p style="opacity: 0.9; font-size: 0.875rem;">Block distracting websites during focus sessions</p>
+        </div>
+        
+        <!-- Focus Insights -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+              Focus Insights
+            </h3>
+          </div>
+          <div class="stats-grid" style="padding: 0 var(--space-5) var(--space-4);">
+            <div class="stat-card">
+              <div class="stat-value" id="todayFocusTimeInsight">0m</div>
+              <div class="stat-label">Today's Focus</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="completedSessionsInsight">0</div>
+              <div class="stat-label">Sessions Done</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="weeklyStreakInsight">0</div>
+              <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="bestFocusTimeInsight">--</div>
+              <div class="stat-label">Best Time</div>
+            </div>
+          </div>
+          <div class="chart-container" style="margin: 0 var(--space-5) var(--space-4);">
+            <div id="focusChartInsight" class="focus-chart-text" style="width: 100%;">
+              <!-- Chart will be rendered here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Tab -->
+      <div class="tab-content" id="aiTab">
+        <div class="card" style="text-align: center; padding: var(--space-8);">
+          <div style="width: 80px; height: 80px; margin: 0 auto var(--space-6); background: var(--gradient-primary); 
+                      border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+              <path d="M12 8v8"></path>
+              <path d="M8 12h8"></path>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+          </div>
+          
+          <h2 style="font-size: 1.5rem; margin-bottom: var(--space-2);">AI Assistant - Coming Soon</h2>
+          <p style="color: var(--text-secondary); margin-bottom: var(--space-6);">
+            Connect your AI model to get personalized productivity insights tailored for ADHD minds
+          </p>
+          
+          <div style="background: var(--bg-secondary); border-radius: var(--radius-lg); padding: var(--space-6); 
+                      text-align: left; margin-bottom: var(--space-6);">
+            <h3 style="font-size: 1.125rem; margin-bottom: var(--space-4);">Future AI Features</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              <div style="display: flex; align-items: start; gap: var(--space-3);">
+                <span style="color: var(--primary); font-size: 1.25rem;">🧠</span>
+                <div>
+                  <h4 style="font-weight: 500; margin-bottom: var(--space-1);">Help organize scattered thoughts</h4>
+                  <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                    Transform brain dumps into structured, actionable plans
+                  </p>
+                </div>
+              </div>
+              
+              <div style="display: flex; align-items: start; gap: var(--space-3);">
+                <span style="color: var(--primary); font-size: 1.25rem;">✨</span>
+                <div>
+                  <h4 style="font-weight: 500; margin-bottom: var(--space-1);">Extract action items from notes</h4>
+                  <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                    AI identifies tasks and priorities from your freeform notes
+                  </p>
+                </div>
+              </div>
+              
+              <div style="display: flex; align-items: start; gap: var(--space-3);">
+                <span style="color: var(--primary); font-size: 1.25rem;">🎯</span>
+                <div>
+                  <h4 style="font-weight: 500; margin-bottom: var(--space-1);">Suggest focus session improvements</h4>
+                  <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                    Learn your patterns and optimize timing for peak productivity
+                  </p>
+                </div>
+              </div>
+              
+              <div style="display: flex; align-items: start; gap: var(--space-3);">
+                <span style="color: var(--primary); font-size: 1.25rem;">📋</span>
+                <div>
+                  <h4 style="font-weight: 500; margin-bottom: var(--space-1);">Prioritize overwhelming task lists</h4>
+                  <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                    Break down paralysis with AI-guided task prioritization
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div style="background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius); 
+                      padding: var(--space-4); text-align: left;">
+            <h4 style="font-size: 0.875rem; font-weight: 500; margin-bottom: var(--space-2); color: var(--text-secondary);">
+              Phase 5 Preview: Custom MCP Integration
+            </h4>
+            <p style="font-size: 0.8125rem; color: var(--text-tertiary); line-height: 1.5;">
+              We're building a custom Model Context Protocol specifically designed for ADHD productivity. 
+              This AI assistant will understand your unique challenges and provide gentle, encouraging support 
+              to help you achieve your goals without overwhelm.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div class="tab-content" id="settingsTab">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Account
+            </h3>
+          </div>
+          <div id="accountSection">
+            <!-- Will be populated by JS -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Daily Focus Goals
+            </h3>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Goal Type</h4>
+              <p>Choose how to track your daily focus</p>
+            </div>
+            <select class="form-select" style="width: auto;" id="goalType">
+              <option value="time">Time-based</option>
+              <option value="sessions">Session-based</option>
+            </select>
+          </div>
+          <div class="setting-row" id="timeGoalRow">
+            <div class="setting-info">
+              <h4>Daily Time Goal</h4>
+              <p>Total focus time to achieve each day</p>
+            </div>
+            <select class="form-select" style="width: auto;" id="timeGoal">
+              <option value="60">1 hour</option>
+              <option value="120" selected>2 hours</option>
+              <option value="180">3 hours</option>
+              <option value="240">4 hours</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="setting-row" id="sessionGoalRow" style="display: none;">
+            <div class="setting-info">
+              <h4>Daily Session Goal</h4>
+              <p>Number of focus sessions to complete</p>
+            </div>
+            <select class="form-select" style="width: auto;" id="sessionGoal">
+              <option value="2">2 sessions</option>
+              <option value="4" selected>4 sessions</option>
+              <option value="6">6 sessions</option>
+              <option value="8">8 sessions</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+              </svg>
+              Timer Settings
+            </h3>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Default Focus Duration</h4>
+              <p>Set your preferred focus session length</p>
+            </div>
+            <select class="form-select" style="width: auto;" id="defaultDuration">
+              <option value="15">15 minutes</option>
+              <option value="25" selected>25 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Auto-start Breaks</h4>
+              <p>Automatically start break timer after focus sessions</p>
+            </div>
+            <div class="toggle" id="autoBreaksToggle"></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Sound Notifications</h4>
+              <p>Play sound when timer completes</p>
+            </div>
+            <div class="toggle active" id="soundToggle"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
+              </svg>
+              Appearance
+            </h3>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Theme</h4>
+              <p>Choose your preferred theme</p>
+            </div>
+            <select class="form-select" style="width: auto;" id="themeSelect">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Reduced Motion</h4>
+              <p>Minimize animations for better accessibility</p>
+            </div>
+            <div class="toggle" id="reducedMotionToggle"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              Notifications
+            </h3>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Desktop Notifications</h4>
+              <p>Show system notifications for timer events</p>
+            </div>
+            <div class="toggle active" id="desktopNotificationsToggle"></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Break Reminders</h4>
+              <p>Remind you to take breaks during long sessions</p>
+            </div>
+            <div class="toggle active" id="breakRemindersToggle"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              Data & Privacy
+            </h3>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Analytics</h4>
+              <p>Help improve the app with anonymous usage data</p>
+            </div>
+            <div class="toggle active" id="analyticsToggle"></div>
+          </div>
+          <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
+            <button class="btn btn-secondary" id="exportDataBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7,10 12,15 17,10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Export Data
+            </button>
+            <button class="btn btn-ghost" id="resetDataBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6"></path>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              Reset All Data
+            </button>
+          </div>
+        </div>
+        
+        <!-- AI Focus Coach -->
+        <div class="card" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); 
+                                   border: 1px solid var(--primary); border-style: dashed;">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                <path d="M12 8v8"></path>
+                <path d="M8 12h8"></path>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+              AI Focus Coach
+              <span class="badge" style="background: var(--primary); color: white; margin-left: var(--space-2);">Coming Soon</span>
+            </h3>
+          </div>
+          <div style="padding: var(--space-4); text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: var(--space-3);">
+              AI suggestions for optimal focus sessions based on your patterns
+            </p>
+            <div style="display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap; opacity: 0.6;">
+              <span class="badge" style="background: var(--bg-tertiary); color: var(--text-secondary);">
+                Best time: 2-4pm
+              </span>
+              <span class="badge" style="background: var(--bg-tertiary); color: var(--text-secondary);">
+                Optimal: 15 min sessions
+              </span>
+              <span class="badge" style="background: var(--bg-tertiary); color: var(--text-secondary);">
+                85% completion rate
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes Tab -->
+      <div class="tab-content" id="notesTab">
+        <!-- Quick Capture Section -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              Quick Capture
+            </h3>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+            <textarea class="form-input" rows="3" placeholder="What's on your mind?" id="quickNoteInput"></textarea>
+            
+            <!-- Storage Destination Selector -->
+            <div style="display: flex; align-items: center; gap: var(--space-3); font-size: 0.875rem;">
+              <span style="color: var(--text-secondary);">Save to:</span>
+              <select class="form-select" id="noteStorageDestination" style="flex: 1;">
+                <option value="supabase">Supabase (Synced)</option>
+                <option value="local">Local Only</option>
+                <option value="notion" disabled>Notion (Coming Soon)</option>
+                <option value="gdocs" disabled>Google Docs (Coming Soon)</option>
+              </select>
+            </div>
+            
+            <div style="display: flex; gap: var(--space-2);">
+              <button class="btn btn-primary" id="saveQuickNote">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Note
+              </button>
+              <button class="btn btn-secondary" id="voiceNoteBtn" disabled title="Voice notes coming in Phase 4">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="23"></line>
+                  <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+                Voice Note
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Sessions (Duration tracking only) -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+              </svg>
+              Recent Sessions
+            </h3>
+          </div>
+          
+          <div id="sessionHistory" style="display: flex; flex-direction: column; gap: var(--space-2);">
+            <!-- Session history will be populated here -->
+            <div style="padding: var(--space-4); text-align: center; color: var(--text-tertiary); font-size: 0.875rem;">
+              No sessions completed today
+            </div>
+          </div>
+          
+          <div style="margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border);">
+            <p style="font-size: 0.875rem; color: var(--text-secondary); text-align: center;">
+              💡 Tip: Add notes about your sessions in the Notes tab
+            </p>
+          </div>
+        </div>
+
+        <!-- Recent Notes -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+              </svg>
+              Recent Notes
+            </h3>
+            <input type="text" class="form-input" placeholder="Search notes..." id="notesSearch" style="max-width: 200px; height: 32px;">
+          </div>
+          
+          <div id="recentNotesList" style="display: flex; flex-direction: column; gap: var(--space-3);">
+            <!-- Recent notes will be populated here -->
+            <div style="padding: var(--space-6); text-align: center; color: var(--text-tertiary);">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto var(--space-3);">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <p>No notes yet. Start capturing your thoughts!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connected Platforms (Future) -->
+        <div class="card" style="background: var(--bg-tertiary); border-style: dashed;">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              Connected Platforms
+              <span class="badge" style="background: var(--warning); color: white; margin-left: var(--space-2);">Coming Soon</span>
+            </h3>
+          </div>
+          <div style="display: grid; gap: var(--space-3);">
+            <button class="btn btn-secondary" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="9" x2="15" y2="9"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+              Connect Notion
+            </button>
+            <button class="btn btn-secondary" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              Connect Google Docs
+            </button>
+          </div>
+        </div>
+        
+        <!-- AI Integration Panel -->
+        <div class="card" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); 
+                                   border: 1px solid var(--primary); border-style: dashed;">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                <path d="M12 8v8"></path>
+                <path d="M8 12h8"></path>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+              AI Note Assistant
+              <span class="badge" style="background: var(--primary); color: white; margin-left: var(--space-2);">Phase 5</span>
+            </h3>
+          </div>
+          <div style="padding: var(--space-4); text-align: center;">
+            <button class="btn btn-primary" disabled style="opacity: 0.6; cursor: not-allowed;">
+              <span>🤖</span>
+              Get AI help with your notes
+            </button>
+            <p style="margin-top: var(--space-3); font-size: 0.875rem; color: var(--text-secondary);">
+              Coming soon: AI-powered note organization, action item extraction, and thought structuring
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Pro Feature Modal -->
+  <div id="proModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18.364 5.636a9 9 0 1 1-12.728 0"></path>
+            <path d="M12 3v9"></path>
+          </svg>
+          Website Blocking - Pro Feature
+        </h2>
+        <button class="modal-close" id="closeProModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-content">
+        <p class="modal-description">
+          Block distracting websites during focus sessions.<br>
+          Perfect for staying on task without willpower battles.
+        </p>
+        
+        <!-- Preview Demo Section -->
+        <div class="preview-section">
+          <h3>Try it out:</h3>
+          <div class="preview-input-group">
+            <input type="text" id="previewUrl" placeholder="reddit.com" value="reddit.com" />
+            <button id="previewBlockBtn" class="preview-btn">Block Preview</button>
+          </div>
+          <div id="previewResult" class="preview-result" style="display: none;">
+            ✅ This site would be blocked during your focus sessions!
+          </div>
+        </div>
+        
+        <!-- Pro Features List -->
+        <div class="pro-features">
+          <h3>What's Included in Pro:</h3>
+          <ul class="feature-list">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+              Website blocking during focus sessions
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+              Extended focus sessions (up to 4 hours)
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+              Advanced focus analytics and trends
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+              Priority feature requests and support
+            </li>
+          </ul>
+        </div>
+        
+        <!-- CTA Section -->
+        <div class="modal-cta">
+          <button id="upgradeToProBtn" class="upgrade-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            Upgrade to Pro - $9.99/month
+          </button>
+          <button id="maybeLaterBtn" class="maybe-later-btn">Maybe Later</button>
+          <p class="modal-disclaimer">Cancel anytime • Secure payment via Stripe</p>
+        </div>
+        
+        <!-- In-Extension Payment Form (Disabled - using simple redirect instead) -->
+        <!-- 
+        <div id="stripePaymentForm" class="payment-form-container" style="display: none;">
+          <div class="payment-form-header">
+            <h3>Complete Your Upgrade</h3>
+            <button id="backToOptions" class="back-btn">← Back</button>
+          </div>
+          
+          <form id="payment-form">
+            <div id="payment-element" class="payment-element">
+              <! -- Stripe Elements will be inserted here -- >
+            </div>
+            
+            <div id="payment-message" class="payment-message"></div>
+            
+            <button id="submit-payment" type="submit" class="submit-payment-btn">
+              <span id="button-text">Pay $9.99/month</span>
+              <span id="spinner" class="spinner" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin">
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                </svg>
+              </span>
+            </button>
+          </form>
+          
+          <div class="payment-security">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>Payments secured by Stripe</span>
+          </div>
+        </div>
+        -->
+      </div>
+    </div>
+  </div>
+
+  <!-- External scripts removed for Manifest V3 compatibility -->
+  
+  <script src="lib/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="auth-service.js"></script>
+  <script src="popup-prod.js"></script>
+</body>
+</html>

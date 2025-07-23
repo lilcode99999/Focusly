@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Note Editing Features</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Note Editing Features Test</h1>
+  
+  <div class="test-section">
+    <h2>Create Test Notes</h2>
+    <textarea id="testNoteContent" rows="5" placeholder="Enter test note content...">**Test Note**
+This is a test note with #adhd and #productivity tags.
+
+- Task 1: Test editing
+- Task 2: Test formatting
+- Task 3: Test auto-save
+
+*This text is italic* and **this is bold**.</textarea>
+    <button id="createTestNote">Create Test Note</button>
+    <button id="createPinnedNote">Create Pinned Note</button>
+    <button id="createMultipleNotes">Create 5 Test Notes</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Note Analysis</h2>
+    <button id="checkNoteStructure">Check Note Data Structure</button>
+    <button id="searchByTag">Search #adhd Notes</button>
+    <button id="checkPinnedNotes">Check Pinned Notes</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>AI Integration Prep</h2>
+    <button id="checkAIMetadata">Check AI Metadata</button>
+    <button id="simulateAIReady">Create AI-Ready Note</button>
+  </div>
+  
+  <div id="log" class="log"></div>
+  
+  <script>
+    function log(message) {
+      const logEl = document.getElementById('log');
+      logEl.textContent = message + '\n' + logEl.textContent;
+    }
+    
+    // Create test note
+    document.getElementById('createTestNote').addEventListener('click', async () => {
+      const content = document.getElementById('testNoteContent').value;
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      
+      const newNote = {
+        id: `note-${Date.now()}`,
+        content: content,
+        type: 'quick',
+        storageType: 'local',
+        timestamp: Date.now(),
+        category: 'general',
+        title: 'Test Note ' + new Date().toLocaleTimeString(),
+        pinned: false
+      };
+      
+      notes.unshift(newNote);
+      await chrome.storage.local.set({ notes });
+      log('Test note created: ' + newNote.title);
+    });
+    
+    // Create pinned note
+    document.getElementById('createPinnedNote').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      
+      const pinnedNote = {
+        id: `note-${Date.now()}`,
+        content: '📌 This is an important pinned note!',
+        type: 'quick',
+        storageType: 'local',
+        timestamp: Date.now(),
+        category: 'ideas',
+        title: 'Important Pinned Note',
+        pinned: true
+      };
+      
+      notes.unshift(pinnedNote);
+      await chrome.storage.local.set({ notes });
+      log('Pinned note created');
+    });
+    
+    // Create multiple notes
+    document.getElementById('createMultipleNotes').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      const categories = ['general', 'focus', 'ideas', 'tasks', 'meeting'];
+      const tags = ['#adhd', '#productivity', '#focus', '#planning', '#review'];
+      
+      for (let i = 0; i < 5; i++) {
+        const note = {
+          id: `note-${Date.now()}-${i}`,
+          content: `Test note ${i + 1} with ${tags[i]} tag.\n\n- Task A\n- Task B\n\n**Important:** This is test content.`,
+          type: 'quick',
+          storageType: i % 2 === 0 ? 'local' : 'supabase',
+          timestamp: Date.now() - (i * 3600000), // Stagger timestamps
+          category: categories[i],
+          title: `Test Note ${i + 1}`,
+          pinned: i === 0
+        };
+        notes.unshift(note);
+      }
+      
+      await chrome.storage.local.set({ notes });
+      log('Created 5 test notes');
+    });
+    
+    // Check note structure
+    document.getElementById('checkNoteStructure').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      log('Total notes: ' + notes.length);
+      
+      if (notes.length > 0) {
+        const note = notes[0];
+        log('\nFirst note structure:');
+        log(JSON.stringify(note, null, 2));
+      }
+    });
+    
+    // Search by tag
+    document.getElementById('searchByTag').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      const adhdNotes = notes.filter(note => note.content.includes('#adhd'));
+      log(`Found ${adhdNotes.length} notes with #adhd tag`);
+      
+      adhdNotes.forEach((note, i) => {
+        log(`${i + 1}. ${note.title || 'Untitled'}: ${note.content.substring(0, 50)}...`);
+      });
+    });
+    
+    // Check pinned notes
+    document.getElementById('checkPinnedNotes').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      const pinnedNotes = notes.filter(note => note.pinned);
+      log(`Found ${pinnedNotes.length} pinned notes`);
+      
+      pinnedNotes.forEach(note => {
+        log(`📌 ${note.title}: ${note.content.substring(0, 50)}...`);
+      });
+    });
+    
+    // Check AI metadata
+    document.getElementById('checkAIMetadata').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      if (notes.length === 0) {
+        log('No notes found');
+        return;
+      }
+      
+      const noteWithMetadata = notes.find(note => note.metadata);
+      if (noteWithMetadata) {
+        log('Note with AI metadata:');
+        log(JSON.stringify(noteWithMetadata.metadata, null, 2));
+      } else {
+        log('No notes with AI metadata found. Try creating a new note.');
+      }
+    });
+    
+    // Create AI-ready note
+    document.getElementById('simulateAIReady').addEventListener('click', async () => {
+      const { notes = [] } = await chrome.storage.local.get('notes');
+      
+      const aiNote = {
+        id: `note-${Date.now()}`,
+        content: `AI Analysis Request:
+
+I'm feeling overwhelmed with my project tasks. Here's my brain dump:
+
+- Need to finish the report by Friday #deadline
+- Meeting with team tomorrow #meeting
+- Code review pending #development
+- Customer feedback to analyze #research
+
+Can you help me prioritize these tasks and create a focused work plan?`,
+        type: 'quick',
+        storageType: 'ai-ready',
+        timestamp: Date.now(),
+        category: 'tasks',
+        title: 'Project Overwhelm - Need AI Help',
+        pinned: true,
+        metadata: {
+          wordCount: 45,
+          hasHashtags: true,
+          hasTasks: true,
+          sentiment: 'overwhelmed',
+          topics: ['project management', 'prioritization'],
+          actionItems: ['finish report', 'team meeting', 'code review', 'analyze feedback']
+        }
+      };
+      
+      notes.unshift(aiNote);
+      await chrome.storage.local.set({ notes });
+      log('Created AI-ready note with full metadata');
+    });
+    
+    log('Note editing test page loaded');
+  </script>
+</body>
+</html>
