@@ -29,7 +29,7 @@ Go to your Supabase dashboard:
 4. Add these environment variables:
 
 ```
-STRIPE_SECRET_KEY=sk_test_51RUG5hGb2rFMogEtgO6VLxr6FdOfGMJTn8bjhdOhItMmVbuY4bpk2A9aVleC0BHUJmiP0jSqoEAuoxKomGksYUDl00TQshrZ90
+STRIPE_SECRET_KEY=sk_test_YOUR_TEST_SECRET_KEY_HERE
 STRIPE_WEBHOOK_SECRET=(you'll get this from Stripe dashboard)
 ```
 
@@ -39,7 +39,7 @@ STRIPE_WEBHOOK_SECRET=(you'll get this from Stripe dashboard)
 2. Click "Add endpoint"
 3. Enter endpoint URL:
    ```
-   https://txairbygkxuaqwfcospq.supabase.co/functions/v1/stripe-webhook
+   https://YOUR_SUPABASE_PROJECT_ID.supabase.co/functions/v1/stripe-webhook
    ```
 4. Select these events:
    - `checkout.session.completed`
@@ -61,8 +61,8 @@ STRIPE_WEBHOOK_SECRET=(you'll get this from Stripe dashboard)
 
 ## Your Webhook URLs
 
-- **Webhook Endpoint**: `https://txairbygkxuaqwfcospq.supabase.co/functions/v1/stripe-webhook`
-- **Checkout Session**: `https://txairbygkxuaqwfcospq.supabase.co/functions/v1/create-checkout-session`
+- **Webhook Endpoint**: `https://YOUR_SUPABASE_PROJECT_ID.supabase.co/functions/v1/stripe-webhook`
+- **Checkout Session**: `https://YOUR_SUPABASE_PROJECT_ID.supabase.co/functions/v1/create-checkout-session`
 
 ## Verify Deployment
 

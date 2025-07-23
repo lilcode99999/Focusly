@@ -1,14 +1,28 @@
-// Import configuration
-const SUPABASE_CONFIG = {
-  url: 'https://txairbygkxuaqwfcospq.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4YWlyYnlna3h1YXF3ZmNvc3BxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU5NDc3MDksImV4cCI6MjA1MTUyMzcwOX0.NMoBW9v37_f4j5Jz9B6v0SxDFQH8l3s61s3CCvvXx7g'
+// Import configuration from config.local.js
+// IMPORTANT: Create config.local.js with your actual keys - see config.template.js
+let SUPABASE_CONFIG = {
+  url: null,
+  anonKey: null
 };
+
+// Try to load config from config.local.js
+try {
+  // In a Chrome extension, we need to handle this differently
+  // Config should be loaded via a separate script tag in the manifest
+  if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+    SUPABASE_CONFIG.url = SUPABASE_URL;
+    SUPABASE_CONFIG.anonKey = SUPABASE_ANON_KEY;
+  }
+} catch (e) {
+  console.warn('Config not found. Please create config.local.js from config.template.js');
+}
 
 class SmartBookmarksBackground {
   constructor() {
     this.mcpServerUrl = 'http://localhost:3000';
     this.bookmarkCache = new Map();
     this.timerInterval = null;
+    this.isConfigured = false;
     this.timerState = {
       isRunning: false,
       startTime: null,
@@ -19,7 +33,27 @@ class SmartBookmarksBackground {
       cycleCount: 0 // Track completed focus-break cycles
     };
     this.sessionId = Date.now();
+    this.checkConfiguration();
     this.init();
+  }
+  
+  checkConfiguration() {
+    if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
+      console.error('⚠️ Focusly: Missing configuration!');
+      console.error('Please create config.local.js from config.template.js with your Supabase credentials.');
+      this.isConfigured = false;
+      // Show notification to user
+      chrome.notifications.create('config-missing', {
+        type: 'basic',
+        iconUrl: 'icon-128.png',
+        title: 'Focusly Configuration Required',
+        message: 'Please set up your Supabase credentials. See console for details.',
+        priority: 2
+      });
+    } else {
+      this.isConfigured = true;
+      console.log('✅ Focusly: Configuration loaded successfully');
+    }
   }
   
   init() {
@@ -1741,6 +1775,12 @@ class SmartBookmarksBackground {
         return;
       }
       
+      // Check if configured before making API call
+      if (!this.isConfigured) {
+        console.error('Cannot sync subscription: Supabase not configured');
+        return;
+      }
+      
       // Make direct API call to check subscription
       const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/rpc/get_user_subscription`, {
         method: 'POST',
@@ -1813,6 +1853,14 @@ class SmartBookmarksBackground {
         return { 
           success: false, 
           error: 'Authentication required. Please sign in to continue.' 
+        };
+      }
+      
+      // Check if configured before making API call
+      if (!this.isConfigured) {
+        return { 
+          success: false, 
+          error: 'Supabase not configured. Please set up config.local.js' 
         };
       }
       

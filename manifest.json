@@ -14,7 +14,7 @@
   ],
   "host_permissions": [
     "http://localhost:3000/*",
-    "https://txairbygkxuaqwfcospq.supabase.co/*",
+    "https://*.supabase.co/*",
     "https://checkout.stripe.com/*",
     "https://billing.stripe.com/*"
   ],
