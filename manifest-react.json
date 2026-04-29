@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Smart Bookmarks - AI Focus Assistant",
+  "version": "2.0.0",
+  "description": "AI-powered bookmark management with ADHD-friendly focus tools",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "notifications"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Smart Bookmarks",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "options_page": "options.html",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
+}

@@ -1,0 +1,399 @@
+/* Settings Page CSS */
+
+:root {
+  /* Extended color palette */
+  --settings-primary: #3b82f6;
+  --settings-primary-hover: #2563eb;
+  --settings-primary-light: rgba(59, 130, 246, 0.1);
+
+  /* Background colors */
+  --settings-bg: #ffffff;
+  --settings-surface: #f8fafc;
+  --settings-surface-hover: #f1f5f9;
+  --settings-nav-bg: #ffffff;
+  --settings-header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* Border and text colors */
+  --settings-border: #e2e8f0;
+  --settings-border-light: #f1f5f9;
+  --settings-text-primary: #1e293b;
+  --settings-text-secondary: #64748b;
+  --settings-text-muted: #94a3b8;
+  --settings-text-on-primary: #ffffff;
+
+  /* Layout */
+  --settings-nav-width: 280px;
+  --settings-content-max-width: 800px;
+  --settings-header-height: 120px;
+
+  /* Spacing */
+  --settings-space-xs: 0.5rem;
+  --settings-space-sm: 0.75rem;
+  --settings-space-md: 1rem;
+  --settings-space-lg: 1.5rem;
+  --settings-space-xl: 2rem;
+  --settings-space-2xl: 3rem;
+
+  /* Effects */
+  --settings-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --settings-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --settings-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+
+  --settings-radius: 0.5rem;
+  --settings-radius-lg: 0.75rem;
+  --settings-radius-xl: 1rem;
+
+  --settings-transition: all 0.15s ease-out;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --settings-bg: #0f172a;
+    --settings-surface: #1e293b;
+    --settings-surface-hover: #334155;
+    --settings-nav-bg: #1e293b;
+    --settings-header-bg: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%);
+    --settings-border: #334155;
+    --settings-border-light: #475569;
+    --settings-text-primary: #f1f5f9;
+    --settings-text-secondary: #cbd5e1;
+    --settings-text-muted: #64748b;
+  }
+}
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--settings-bg);
+  color: var(--settings-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Loading state */
+.settings-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: var(--settings-space-lg);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--settings-border);
+  border-top: 3px solid var(--settings-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Main layout */
+.settings-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.settings-header {
+  background: var(--settings-header-bg);
+  color: var(--settings-text-on-primary);
+  padding: var(--settings-space-xl) 0;
+  box-shadow: var(--settings-shadow-md);
+}
+
+.settings-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--settings-space-xl);
+}
+
+.settings-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--settings-space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--settings-space-md);
+}
+
+.settings-title-icon {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.settings-subtitle {
+  font-size: 1.125rem;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* Layout container */
+.settings-layout {
+  flex: 1;
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Navigation */
+.settings-nav {
+  width: var(--settings-nav-width);
+  background: var(--settings-nav-bg);
+  border-right: 1px solid var(--settings-border);
+  padding: var(--settings-space-xl) 0;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  height: calc(100vh - var(--settings-header-height));
+}
+
+.settings-nav-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--settings-space-md);
+  width: 100%;
+  padding: var(--settings-space-lg) var(--settings-space-xl);
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--settings-transition);
+  border-left: 3px solid transparent;
+  color: var(--settings-text-primary);
+}
+
+.settings-nav-item:hover {
+  background: var(--settings-surface-hover);
+}
+
+.settings-nav-item:focus {
+  outline: 2px solid var(--settings-primary);
+  outline-offset: -2px;
+}
+
+.settings-nav-item--active {
+  background: var(--settings-primary-light);
+  border-left-color: var(--settings-primary);
+  color: var(--settings-primary);
+}
+
+.settings-nav-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.settings-nav-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-nav-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: var(--settings-space-xs);
+}
+
+.settings-nav-description {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--settings-text-secondary);
+  line-height: 1.4;
+}
+
+/* Main content */
+.settings-main {
+  flex: 1;
+  padding: var(--settings-space-xl);
+  overflow-y: auto;
+}
+
+.settings-content {
+  max-width: var(--settings-content-max-width);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+.settings-footer {
+  border-top: 1px solid var(--settings-border);
+  background: var(--settings-surface);
+  padding: var(--settings-space-lg) 0;
+  margin-top: auto;
+}
+
+.settings-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--settings-space-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--settings-space-md);
+}
+
+.settings-footer-text {
+  font-size: 0.875rem;
+  color: var(--settings-text-secondary);
+}
+
+.settings-footer-links {
+  display: flex;
+  gap: var(--settings-space-lg);
+}
+
+.settings-footer-links a {
+  font-size: 0.875rem;
+  color: var(--settings-text-secondary);
+  text-decoration: none;
+  transition: var(--settings-transition);
+}
+
+.settings-footer-links a:hover {
+  color: var(--settings-primary);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .settings-layout {
+    flex-direction: column;
+  }
+
+  .settings-nav {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--settings-border);
+    display: flex;
+    overflow-x: auto;
+    padding: var(--settings-space-md) 0;
+  }
+
+  .settings-nav-item {
+    flex-shrink: 0;
+    min-width: 200px;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+
+  .settings-nav-item--active {
+    border-left: none;
+    border-bottom-color: var(--settings-primary);
+  }
+
+  .settings-main {
+    padding: var(--settings-space-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-header-content {
+    padding: 0 var(--settings-space-lg);
+  }
+
+  .settings-title {
+    font-size: 1.5rem;
+  }
+
+  .settings-subtitle {
+    font-size: 1rem;
+  }
+
+  .settings-nav {
+    padding: var(--settings-space-sm) 0;
+  }
+
+  .settings-nav-item {
+    min-width: 160px;
+    padding: var(--settings-space-md);
+  }
+
+  .settings-main {
+    padding: var(--settings-space-md);
+  }
+
+  .settings-footer-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 0 var(--settings-space-lg);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .settings-content {
+    animation: none;
+  }
+
+  .loading-spinner {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+  .settings-nav-item:focus {
+    outline: 3px solid;
+    outline-offset: -3px;
+  }
+
+  .settings-nav-item--active {
+    background: var(--settings-text-primary);
+    color: var(--settings-bg);
+  }
+}
+
+/* Print styles */
+@media print {
+  .settings-header,
+  .settings-nav,
+  .settings-footer {
+    display: none;
+  }
+
+  .settings-layout {
+    flex-direction: column;
+  }
+
+  .settings-main {
+    padding: 0;
+  }
+}

@@ -1,0 +1,23 @@
+.tab-panel {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tab-panel.active {
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tab-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}

@@ -1,0 +1,33 @@
+.library-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.library-header {
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.library-header h2 {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text-primary);
+}
+
+.library-stats {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.loading-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}

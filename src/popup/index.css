@@ -1,0 +1,120 @@
+:root {
+  --primary-bg: #ffffff;
+  --secondary-bg: #f8f9fa;
+  --tertiary-bg: #f1f3f4;
+  --surface-bg: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --divider-color: rgba(0, 0, 0, 0.06);
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary: #a1a1a6;
+  --accent-color: #007aff;
+  --accent-hover: #0051d5;
+  --success-color: #34c759;
+  --warning-color: #ff9500;
+  --error-color: #ff3b30;
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --radius-small: 6px;
+  --radius-medium: 8px;
+  --radius-large: 12px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 17px;
+  --transition-fast: 0.15s ease-out;
+  --transition-medium: 0.25s ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-bg: #000000;
+    --secondary-bg: #1c1c1e;
+    --tertiary-bg: #2c2c2e;
+    --surface-bg: #1c1c1e;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --divider-color: rgba(255, 255, 255, 0.06);
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1a6;
+    --text-tertiary: #6c6c70;
+    --accent-color: #0a84ff;
+    --accent-hover: #409cff;
+    --success-color: #30d158;
+    --warning-color: #ff9f0a;
+    --error-color: #ff453a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-system);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  margin: 0;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App Container */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--primary-bg);
+}
+
+/* App Header */
+.app-header {
+  display: flex;
+  align-items: stretch;
+  background-color: var(--secondary-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  gap: var(--spacing-sm);
+}
+
+/* Settings Button */
+.settings-button {
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.settings-button:hover {
+  background: var(--secondary-bg);
+  box-shadow: var(--shadow-subtle);
+  transform: scale(1.05);
+}
+
+.settings-button:active {
+  transform: scale(0.95);
+}

@@ -1,180 +1,112 @@
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from './database.types'
+import type { Session, User } from '@supabase/supabase-js';
 
-// These will be replaced with actual values from environment/config
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+type DisabledResult<TData> = {
+  data: TData;
+  error: Error;
+};
 
-// Create a single supabase client for interacting with your database
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+type DisabledSession = Session | null;
+type DisabledUser = User | null;
+
+const disabledCloudError = new Error(
+  'Supabase is disabled for the local-first MVP.'
+);
+
+const disabledResult = <TData>(data: TData): DisabledResult<TData> => ({
+  data,
+  error: disabledCloudError,
+});
+
+const createDisabledQuery = () => ({
+  select: () => createDisabledQuery(),
+  insert: () => createDisabledQuery(),
+  eq: () => createDisabledQuery(),
+  order: () => createDisabledQuery(),
+  range: () => createDisabledQuery(),
+  limit: () => createDisabledQuery(),
+  gte: () => createDisabledQuery(),
+  lte: () => createDisabledQuery(),
+  single: async () => disabledResult(null),
+});
+
+export const supabase = {
   auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-})
-
-// Helper function for Chrome extension context
-export const createSupabaseClient = (url: string, key: string) => {
-  return createClient<Database>(url, key, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      storage: {
-        getItem: (key: string) => {
-          return new Promise((resolve) => {
-            chrome.storage.local.get([key], (result) => {
-              resolve(result[key] || null)
-            })
-          })
-        },
-        setItem: (key: string, value: string) => {
-          return new Promise((resolve) => {
-            chrome.storage.local.set({ [key]: value }, () => {
-              resolve()
-            })
-          })
-        },
-        removeItem: (key: string) => {
-          return new Promise((resolve) => {
-            chrome.storage.local.remove([key], () => {
-              resolve()
-            })
-          })
+    getSession: async (): Promise<{
+      data: { session: DisabledSession };
+      error: null;
+    }> => ({
+      data: { session: null },
+      error: null,
+    }),
+    getUser: async () => ({
+      data: { user: null as DisabledUser },
+      error: disabledCloudError,
+    }),
+    signInWithPassword: async () => disabledResult({ user: null, session: null }),
+    signUp: async () => disabledResult({ user: null, session: null }),
+    signOut: async () => ({ error: null }),
+    onAuthStateChange: (
+      _callback: (event: string, session: DisabledSession) => void
+    ) => ({
+      data: {
+        subscription: {
+          unsubscribe: () => undefined,
         },
       },
-    },
-  })
-}
+    }),
+  },
+  from: () => createDisabledQuery(),
+};
 
-// Auth helpers
-export const signIn = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-  return { data, error }
-}
+export const createSupabaseClient = () => supabase;
 
-export const signUp = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  })
-  return { data, error }
-}
+export const signIn = async (_email: string, _password: string) => {
+  return supabase.auth.signInWithPassword();
+};
+
+export const signUp = async (_email: string, _password: string) => {
+  return supabase.auth.signUp();
+};
 
 export const signOut = async () => {
-  const { error } = await supabase.auth.signOut()
-  return { error }
-}
+  return supabase.auth.signOut();
+};
 
 export const getUser = async () => {
-  const { data: { user }, error } = await supabase.auth.getUser()
-  return { user, error }
-}
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  return { user, error };
+};
 
-// Subscription helpers
-export const getUserSubscription = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('user_profiles')
-    .select('subscription_tier, subscription_status, subscription_expires_at')
-    .eq('id', userId)
-    .single()
-  
-  return { data, error }
-}
+export const getUserSubscription = async (_userId: string) => {
+  return disabledResult(null);
+};
 
-export const isProUser = async (userId: string) => {
-  const { data } = await getUserSubscription(userId)
-  return data?.subscription_tier === 'pro' || data?.subscription_tier === 'teams' || data?.subscription_tier === 'enterprise'
-}
+export const isProUser = async (_userId: string) => false;
 
-// Bookmark helpers
-export const createBookmark = async (bookmark: {
-  url: string
-  title: string
-  description?: string
-  tags?: string[]
+export const createBookmark = async (_bookmark: {
+  url: string;
+  title: string;
+  description?: string;
+  tags?: string[];
 }) => {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('User not authenticated')
+  return disabledResult(null);
+};
 
-  const { data, error } = await supabase
-    .from('bookmarks')
-    .insert({
-      ...bookmark,
-      user_id: user.id,
-    })
-    .select()
-    .single()
-  
-  return { data, error }
-}
+export const getBookmarks = async (_limit = 50, _offset = 0) => {
+  return disabledResult([]);
+};
 
-export const getBookmarks = async (limit = 50, offset = 0) => {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('User not authenticated')
+export const searchBookmarks = async (_query: string) => {
+  return disabledResult([]);
+};
 
-  const { data, error } = await supabase
-    .from('bookmarks')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1)
-  
-  return { data, error }
-}
-
-export const searchBookmarks = async (query: string) => {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('User not authenticated')
-
-  const { data, error } = await supabase
-    .from('bookmarks')
-    .select('*')
-    .eq('user_id', user.id)
-    .textSearch('title', query, {
-      type: 'websearch',
-      config: 'english',
-    })
-    .order('created_at', { ascending: false })
-    .limit(20)
-  
-  return { data, error }
-}
-
-// Session helpers for body doubling
 export const getActiveSessions = async () => {
-  const now = new Date().toISOString()
-  
-  const { data, error } = await supabase
-    .from('coworking_sessions')
-    .select(`
-      *,
-      host:user_profiles!host_id(full_name, avatar_url),
-      participants:session_participants(count)
-    `)
-    .gte('scheduled_end_at', now)
-    .lte('scheduled_start_at', now)
-    .eq('is_private', false)
-    .order('scheduled_start_at', { ascending: true })
-  
-  return { data, error }
-}
+  return disabledResult([]);
+};
 
-export const joinSession = async (sessionId: string, goals?: string) => {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('User not authenticated')
-
-  const { data, error } = await supabase
-    .from('session_participants')
-    .insert({
-      session_id: sessionId,
-      user_id: user.id,
-      goals,
-    })
-    .select()
-    .single()
-  
-  return { data, error }
-}
+export const joinSession = async (_sessionId: string, _goals?: string) => {
+  return disabledResult(null);
+};

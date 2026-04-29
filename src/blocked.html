@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Blocked - Smart Bookmarks</title>
+  <style>
+    :root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #f8f9fa;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --accent-color: #007aff;
+      --warning-color: #ff9500;
+      --error-color: #ff3b30;
+      --success-color: #34c759;
+      --radius-large: 12px;
+      --spacing-lg: 16px;
+      --spacing-xl: 20px;
+      --spacing-2xl: 24px;
+      --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary-bg: #000000;
+        --secondary-bg: #1c1c1e;
+        --text-primary: #ffffff;
+        --text-secondary: #a1a1a6;
+        --accent-color: #0a84ff;
+        --warning-color: #ff9f0a;
+        --error-color: #ff453a;
+        --success-color: #30d158;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-system);
+      background: var(--primary-bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 500px;
+      padding: var(--spacing-2xl);
+      text-align: center;
+    }
+
+    .icon {
+      font-size: 64px;
+      margin-bottom: var(--spacing-xl);
+      display: block;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-primary);
+    }
+
+    .message {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-2xl);
+    }
+
+    .blocked-url {
+      font-family: monospace;
+      background: var(--secondary-bg);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-large);
+      margin: var(--spacing-xl) 0;
+      word-break: break-all;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-2xl);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: var(--radius-large);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.8;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--secondary-bg);
+      color: var(--text-primary);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: var(--text-secondary);
+      color: var(--primary-bg);
+    }
+
+    .btn-warning {
+      background: var(--warning-color);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      opacity: 0.8;
+    }
+
+    .breakthrough-section {
+      margin-top: var(--spacing-2xl);
+      padding: var(--spacing-xl);
+      background: var(--secondary-bg);
+      border-radius: var(--radius-large);
+      display: none;
+    }
+
+    .breakthrough-section.show {
+      display: block;
+    }
+
+    .breakthrough-timer {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--warning-color);
+      margin: var(--spacing-lg) 0;
+    }
+
+    .tips {
+      margin-top: var(--spacing-2xl);
+      text-align: left;
+    }
+
+    .tips h3 {
+      font-size: 18px;
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-primary);
+    }
+
+    .tips ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .tips li {
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      background: var(--secondary-bg);
+      border-radius: var(--radius-large);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .tips li::before {
+      content: "💡";
+      margin-right: var(--spacing-lg);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: var(--spacing-lg);
+      }
+
+      .title {
+        font-size: 24px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🚫</div>
+    <h1 class="title">Website Blocked</h1>
+    <p class="message">
+      This website has been blocked to help you stay focused and productive.
+    </p>
+
+    <div class="blocked-url" id="blockedUrl">
+      <!-- URL will be populated by JavaScript -->
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="goBack()">
+        ← Go Back
+      </button>
+
+      <button class="btn btn-secondary" onclick="openSettings()">
+        ⚙️ Manage Blocking Settings
+      </button>
+
+      <button class="btn btn-warning" onclick="requestBreakthrough()" id="breakthroughBtn" style="display: none;">
+        🔓 Request 5-Minute Access
+      </button>
+    </div>
+
+    <div class="breakthrough-section" id="breakthroughSection">
+      <h3>Access Granted</h3>
+      <p>You have temporary access to this website.</p>
+      <div class="breakthrough-timer" id="breakthroughTimer">5:00</div>
+      <button class="btn btn-primary" onclick="proceedToSite()">
+        Continue to Website
+      </button>
+    </div>
+
+    <div class="tips">
+      <h3>Stay Focused</h3>
+      <ul>
+        <li>Take a short break and stretch</li>
+        <li>Review your current task or goal</li>
+        <li>Try the Pomodoro technique with our focus timer</li>
+        <li>Consider if this website aligns with your priorities</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    let breakthroughTimer = null;
+    let timeLeft = 300; // 5 minutes in seconds
+    const SETTINGS_KEY = 'smart-bookmarks-settings';
+
+    // Get blocked URL from query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const blockedUrl = urlParams.get('url');
+
+    if (blockedUrl) {
+      document.getElementById('blockedUrl').textContent = decodeURIComponent(blockedUrl);
+    }
+
+    // Check if breakthrough is allowed
+    checkBreakthroughSettings();
+
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.close();
+      }
+    }
+
+    function openSettings() {
+      chrome.runtime.openOptionsPage();
+    }
+
+    async function checkBreakthroughSettings() {
+      try {
+        const result = await new Promise((resolve) => {
+          chrome.storage.local.get([SETTINGS_KEY, 'settings'], resolve);
+        });
+
+        const settings = result[SETTINGS_KEY] || result.settings;
+        if (settings?.blocking?.allowBreakthrough) {
+          document.getElementById('breakthroughBtn').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error checking breakthrough settings:', error);
+      }
+    }
+
+    async function requestBreakthrough() {
+      try {
+        // Check daily breakthrough limit
+        const today = new Date().toDateString();
+        const result = await new Promise((resolve) => {
+          chrome.storage.local.get(['breakthroughUsage', SETTINGS_KEY, 'settings'], resolve);
+        });
+
+        const usage = result.breakthroughUsage || {};
+        const settings = result[SETTINGS_KEY] || result.settings || {};
+        const limit = settings.blocking?.breakthroughLimit || 3;
+        const todayUsage = usage[today] || 0;
+
+        if (todayUsage >= limit) {
+          alert(`You've reached your daily breakthrough limit of ${limit}. Try again tomorrow!`);
+          return;
+        }
+
+        // Update usage
+        usage[today] = todayUsage + 1;
+        await new Promise((resolve) => {
+          chrome.storage.local.set({ breakthroughUsage: usage }, resolve);
+        });
+
+        // Show breakthrough section and start timer
+        document.getElementById('breakthroughSection').classList.add('show');
+        document.getElementById('breakthroughBtn').style.display = 'none';
+
+        startBreakthroughTimer();
+
+      } catch (error) {
+        console.error('Error requesting breakthrough:', error);
+        alert('Error processing breakthrough request. Please try again.');
+      }
+    }
+
+    function startBreakthroughTimer() {
+      const timerElement = document.getElementById('breakthroughTimer');
+
+      breakthroughTimer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(breakthroughTimer);
+          // Redirect back to blocked page or close tab
+          location.reload();
+        }
+
+        timeLeft--;
+      }, 1000);
+    }
+
+    function proceedToSite() {
+      if (blockedUrl) {
+        // Store breakthrough session
+        const breakthroughExpiry = Date.now() + (timeLeft * 1000);
+        chrome.storage.local.set({
+          breakthroughSession: {
+            url: blockedUrl,
+            expiry: breakthroughExpiry
+          }
+        });
+
+        // Redirect to the original URL
+        window.location.href = decodeURIComponent(blockedUrl);
+      }
+    }
+
+    // Clean up timer on page unload
+    window.addEventListener('beforeunload', () => {
+      if (breakthroughTimer) {
+        clearInterval(breakthroughTimer);
+      }
+    });
+  </script>
+</body>
+</html>
