@@ -4,6 +4,7 @@ import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
 import { BOOKMARKS_STORAGE_KEY } from '@/lib/storageKeys';
 import { deleteBookmark, getBookmarks, markBookmarkResurfaced, updateBookmark } from '@/services/localBookmarks';
+import { markOnboardingStep } from '@/services/localOnboarding';
 import { SmartBookmark } from '@/types/bookmark';
 import './LibraryTab.css';
 
@@ -32,6 +33,12 @@ const LibraryTab: React.FC = () => {
   useEffect(() => {
     filterBookmarks();
   }, [bookmarks, searchQuery, selectedTags]);
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      void markOnboardingStep('searchedLibrary');
+    }
+  }, [searchQuery]);
 
   const loadBookmarks = async () => {
     try {
@@ -94,6 +101,7 @@ const LibraryTab: React.FC = () => {
 
   const handleStartFocus = async (bookmark: Bookmark) => {
     await markBookmarkResurfaced(bookmark.id);
+    await markOnboardingStep('startedFocus');
     chrome.runtime.sendMessage({
       type: 'START_FOCUS_SESSION',
       data: {

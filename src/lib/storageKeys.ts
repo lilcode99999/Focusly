@@ -9,3 +9,5 @@ export const FOCUS_SESSIONS_STORAGE_KEY = 'focusSessions';
 export const CURRENT_FOCUS_SESSION_STORAGE_KEY = 'currentFocusSession';
 export const PENDING_FOCUS_REQUEST_STORAGE_KEY = 'pendingFocusRequest';
 export const FOCUS_SESSION_SUMMARIES_STORAGE_KEY = 'focusSessionSummaries';
+
+export const SMART_BOOKMARKS_ONBOARDING_STORAGE_KEY = 'smart-bookmarks-onboarding';

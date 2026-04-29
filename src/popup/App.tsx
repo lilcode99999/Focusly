@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import TabBar from '@/components/Layout/TabBar';
 import TabPanel from '@/components/Layout/TabPanel';
 import HomeTab from '@/components/Home/HomeTab';
@@ -6,6 +6,7 @@ import FocusTab from '@/components/Focus/FocusTab';
 import LibraryTab from '@/components/Library/LibraryTab';
 import InsightsTab from '@/components/Insights/InsightsTab';
 import NotesTab from '@/components/Notes/NotesTab';
+import { markOnboardingStep } from '@/services/localOnboarding';
 
 export type Tab = 'home' | 'focus' | 'library' | 'notes' | 'insights';
 
@@ -20,20 +21,27 @@ const isPopupTab = (tab: unknown): tab is Tab => (
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
 
+  const handleTabChange = useCallback((tab: Tab) => {
+    setActiveTab(tab);
+    if (tab === 'insights') {
+      void markOnboardingStep('viewedInsights');
+    }
+  }, []);
+
   useEffect(() => {
     const handleRuntimeMessage = (message: { type?: string; tab?: unknown }) => {
       if (message.type === 'SWITCH_TAB' && isPopupTab(message.tab)) {
-        setActiveTab(message.tab);
+        handleTabChange(message.tab);
       }
 
       if (message.type === 'START_FOCUS' || message.type === 'START_FOCUS_SESSION') {
-        setActiveTab('focus');
+        handleTabChange('focus');
       }
     };
 
     chrome.runtime.onMessage.addListener(handleRuntimeMessage);
     return () => chrome.runtime.onMessage.removeListener(handleRuntimeMessage);
-  }, []);
+  }, [handleTabChange]);
 
   const openSettings = () => {
     chrome.runtime.openOptionsPage();
@@ -44,7 +52,7 @@ const App: React.FC = () => {
       <div className="app-header">
         <TabBar
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
         />
         <button
           className="settings-button"
@@ -57,7 +65,7 @@ const App: React.FC = () => {
 
       <div className="tab-content">
         <TabPanel isActive={activeTab === 'home'}>
-          <HomeTab />
+          <HomeTab onNavigate={handleTabChange} />
         </TabPanel>
 
         <TabPanel isActive={activeTab === 'focus'}>

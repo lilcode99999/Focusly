@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { saveBookmark } from '@/services/localBookmarks';
+import { markOnboardingStep } from '@/services/localOnboarding';
 import { EnergyLevel } from '@/types/bookmark';
 import './QuickActions.css';
 
@@ -14,11 +15,15 @@ interface SaveDraft {
   energy: '' | EnergyLevel;
 }
 
-const QuickActions: React.FC = () => {
+interface QuickActionsProps {
+  openSaveComposerSignal?: number;
+}
+
+const QuickActions: React.FC<QuickActionsProps> = ({ openSaveComposerSignal = 0 }) => {
   const [saveDraft, setSaveDraft] = useState<SaveDraft | null>(null);
   const [saveStatus, setSaveStatus] = useState('');
 
-  const handlePrepareBookmark = async () => {
+  const handlePrepareBookmark = useCallback(async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab.url && tab.title) {
       const domain = new URL(tab.url).hostname.replace(/^www\./, '');
@@ -35,7 +40,13 @@ const QuickActions: React.FC = () => {
       });
       setSaveStatus('');
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (openSaveComposerSignal > 0) {
+      handlePrepareBookmark();
+    }
+  }, [handlePrepareBookmark, openSaveComposerSignal]);
 
   const handleStartFocus = () => {
     // Switch to focus tab and start timer
@@ -84,6 +95,9 @@ const QuickActions: React.FC = () => {
 
       setSaveDraft(null);
       setSaveStatus(result.created ? 'Saved with context.' : 'Updated with fresh context.');
+      if (saveDraft.whySaved.trim() && saveDraft.nextAction.trim()) {
+        await markOnboardingStep('savedFirstContext');
+      }
     } catch (error) {
       console.error('Failed to save bookmark:', error);
       setSaveStatus('Could not save this page yet.');
@@ -125,6 +139,7 @@ const QuickActions: React.FC = () => {
               value={saveDraft.whySaved}
               onChange={(event) => updateDraft('whySaved', event.target.value)}
               placeholder="Future me needs this for..."
+              required
               rows={2}
             />
           </label>
@@ -136,6 +151,7 @@ const QuickActions: React.FC = () => {
               value={saveDraft.nextAction}
               onChange={(event) => updateDraft('nextAction', event.target.value)}
               placeholder="Read, compare, reply, build..."
+              required
             />
           </label>
 

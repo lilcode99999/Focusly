@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import MagicInput, { Intent } from './MagicInput';
 import ContextCards, { ContextCard } from './ContextCards';
+import OnboardingPanel from './OnboardingPanel';
 import QuickActions from './QuickActions';
 import RecentItems from './RecentItems';
 import { BOOKMARKS_STORAGE_KEY, DAILY_STATS_STORAGE_KEY } from '@/lib/storageKeys';
@@ -15,9 +16,16 @@ import MCPService from '@/services/MCPService';
 import { SmartBookmark } from '@/types/bookmark';
 import './HomeTab.css';
 
-const HomeTab: React.FC = () => {
+type HomeDestination = 'focus' | 'library' | 'insights';
+
+interface HomeTabProps {
+  onNavigate?: (destination: HomeDestination) => void;
+}
+
+const HomeTab: React.FC<HomeTabProps> = ({ onNavigate }) => {
   const [contextCards, setContextCards] = useState<ContextCard[]>([]);
   const [_isProcessing, setIsProcessing] = useState(false);
+  const [saveComposerSignal, setSaveComposerSignal] = useState(0);
   const [stats, setStats] = useState({
     bookmarksToday: 0,
     focusMinutes: 0,
@@ -260,6 +268,14 @@ const HomeTab: React.FC = () => {
     setContextCards(prev => prev.filter(card => card.id !== cardId));
   };
 
+  const handleOnboardingSave = () => {
+    setSaveComposerSignal((current) => current + 1);
+  };
+
+  const handleOnboardingNavigate = (destination: HomeDestination) => {
+    onNavigate?.(destination);
+  };
+
   return (
     <div className="home-tab">
       <div className="home-header">
@@ -282,13 +298,18 @@ const HomeTab: React.FC = () => {
 
       <MagicInput onIntentDetected={handleIntentDetected} />
 
+      <OnboardingPanel
+        onSaveCurrentTab={handleOnboardingSave}
+        onNavigate={handleOnboardingNavigate}
+      />
+
       <h3 className="section-title">Return to Context</h3>
       <ContextCards
         cards={contextCards}
         onDismiss={handleCardDismiss}
       />
 
-      <QuickActions />
+      <QuickActions openSaveComposerSignal={saveComposerSignal} />
       <RecentItems />
     </div>
   );
