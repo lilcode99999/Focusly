@@ -13,7 +13,13 @@
   --success-color: #34c759;
   --warning-color: #ff9500;
   --error-color: #ff3b30;
+  --accent-color-alpha: rgba(0, 122, 255, 0.12);
+  --success-color-alpha: rgba(52, 199, 89, 0.12);
+  --warning-color-alpha: rgba(255, 149, 0, 0.14);
+  --error-color-alpha: rgba(255, 59, 48, 0.12);
+  --warning-bg: rgba(255, 149, 0, 0.08);
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
   --radius-small: 6px;
   --radius-medium: 8px;
@@ -30,6 +36,7 @@
   --font-size-sm: 13px;
   --font-size-md: 15px;
   --font-size-lg: 17px;
+  --font-size-xl: 20px;
   --transition-fast: 0.15s ease-out;
   --transition-medium: 0.25s ease-out;
 }
@@ -50,11 +57,26 @@
     --success-color: #30d158;
     --warning-color: #ff9f0a;
     --error-color: #ff453a;
+    --accent-color-alpha: rgba(10, 132, 255, 0.18);
+    --success-color-alpha: rgba(48, 209, 88, 0.16);
+    --warning-color-alpha: rgba(255, 159, 10, 0.16);
+    --error-color-alpha: rgba(255, 69, 58, 0.16);
+    --warning-bg: rgba(255, 159, 10, 0.12);
   }
 }
 
 * {
   box-sizing: border-box;
+}
+
+html,
+body {
+  width: 380px;
+  min-width: 380px;
+  max-width: 380px;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
 }
 
 body {
@@ -67,11 +89,31 @@ body {
   overflow: hidden;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-width: 0;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
 #root {
-  width: 100%;
-  height: 100%;
+  width: 380px;
+  height: 600px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* App Container */
@@ -79,7 +121,9 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
   background: var(--primary-bg);
+  overflow: hidden;
 }
 
 /* App Header */
@@ -88,14 +132,15 @@ body {
   align-items: stretch;
   background-color: var(--secondary-bg);
   border-bottom: 1px solid var(--border-color);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  gap: var(--spacing-sm);
+  padding: var(--spacing-xs);
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
 }
 
 /* Settings Button */
 .settings-button {
-  width: 48px;
-  height: 48px;
+  width: 38px;
+  height: 44px;
   border: none;
   background: var(--surface-bg);
   border: 1px solid var(--border-color);
@@ -112,9 +157,8 @@ body {
 .settings-button:hover {
   background: var(--secondary-bg);
   box-shadow: var(--shadow-subtle);
-  transform: scale(1.05);
 }
 
 .settings-button:active {
-  transform: scale(0.95);
+  transform: translateY(1px);
 }

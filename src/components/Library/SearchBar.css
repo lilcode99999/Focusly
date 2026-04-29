@@ -1,5 +1,5 @@
 .search-bar-container {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   background-color: var(--secondary-bg);
   border-bottom: 1px solid var(--border-color);
 }
@@ -24,17 +24,18 @@
   margin-right: var(--spacing-sm);
 }
 
-.search-input {
+.search-bar .search-input {
   flex: 1;
+  min-width: 0;
   background: none;
   border: none;
-  padding: var(--spacing-sm) 0;
-  font-size: var(--font-size-md);
+  padding: 10px 0;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
   outline: none;
 }
 
-.search-input::placeholder {
+.search-bar .search-input::placeholder {
   color: var(--text-tertiary);
 }
 

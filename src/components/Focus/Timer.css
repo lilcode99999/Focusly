@@ -2,13 +2,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-md);
 }
 
 .timer-circle {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 168px;
+  height: 168px;
 }
 
 .timer-svg {
@@ -35,7 +35,7 @@
 }
 
 .timer-time {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
@@ -48,7 +48,7 @@
 }
 
 .timer-stop-button {
-  padding: var(--spacing-md) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   background-color: var(--error-color);
   color: white;
   border: none;
@@ -61,6 +61,5 @@
 
 .timer-stop-button:hover {
   background-color: #e6332a;
-  transform: translateY(-1px);
   box-shadow: var(--shadow-subtle);
 }

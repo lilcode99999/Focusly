@@ -1,14 +1,15 @@
 .insights-tab {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-md);
   height: 100%;
+  min-width: 0;
   overflow-y: auto;
 }
 
 .insights-header {
-  text-align: center;
+  text-align: left;
 }
 
 .insights-header h2 {

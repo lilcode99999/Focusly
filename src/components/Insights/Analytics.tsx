@@ -19,10 +19,10 @@ const Analytics: React.FC<AnalyticsProps> = ({ data }) => {
   const getDayLabel = (index: number) => {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const today = new Date().getDay();
-    return days[(today - 6 + index) % 7];
+    return days[(today - 6 + index + 7) % 7];
   };
 
-  const maxMinutes = Math.max(...data.dailyFocusMinutes, 1);
+  const chartMaxMinutes = Math.max(...data.dailyFocusMinutes, 30);
 
   return (
     <div className="analytics-container">
@@ -48,19 +48,24 @@ const Analytics: React.FC<AnalyticsProps> = ({ data }) => {
       <div className="chart-section">
         <h3>Daily Focus Time</h3>
         <div className="bar-chart">
-          {data.dailyFocusMinutes.map((minutes, index) => (
-            <div key={index} className="bar-container">
-              <div
-                className="bar"
-                style={{
-                  height: `${(minutes / maxMinutes) * 100}%`,
-                }}
-              >
-                <span className="bar-value">{minutes}</span>
+          {data.dailyFocusMinutes.map((minutes, index) => {
+            const dayLabel = getDayLabel(index);
+            const barHeight = minutes > 0 ? `${(minutes / chartMaxMinutes) * 100}%` : '0%';
+
+            return (
+              <div key={index} className="bar-container" aria-label={`${dayLabel}: ${minutes} focus minutes`}>
+                <div className="bar-track">
+                  <div
+                    className={`bar ${minutes === 0 ? 'bar-empty' : ''}`}
+                    style={{ height: barHeight }}
+                  >
+                    <span className="bar-value">{minutes}</span>
+                  </div>
+                </div>
+                <span className="bar-label">{dayLabel}</span>
               </div>
-              <span className="bar-label">{getDayLabel(index)}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
