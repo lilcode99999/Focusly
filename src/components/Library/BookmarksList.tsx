@@ -8,6 +8,13 @@ interface BookmarksListProps {
   onDelete: (id: string) => void;
   onEdit: (id: string, updates: Partial<Bookmark>) => void;
   onStartFocus: (bookmark: Bookmark) => void;
+  emptyState?: {
+    icon?: string;
+    title: string;
+    description: string;
+    actionLabel?: string;
+    onAction?: () => void;
+  };
 }
 
 const BookmarksList: React.FC<BookmarksListProps> = ({
@@ -15,15 +22,21 @@ const BookmarksList: React.FC<BookmarksListProps> = ({
   onDelete,
   onEdit,
   onStartFocus,
+  emptyState,
 }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   if (bookmarks.length === 0) {
     return (
       <div className="empty-bookmarks">
-        <div className="empty-icon">📚</div>
-        <h3>No bookmarks found</h3>
-        <p>Save your first bookmark to get started!</p>
+        <div className="empty-icon">{emptyState?.icon || '📚'}</div>
+        <h3>{emptyState?.title || 'No bookmarks found'}</h3>
+        <p>{emptyState?.description || 'Save your first bookmark to get started.'}</p>
+        {emptyState?.actionLabel && emptyState.onAction && (
+          <button className="empty-action" onClick={emptyState.onAction}>
+            {emptyState.actionLabel}
+          </button>
+        )}
       </div>
     );
   }

@@ -130,8 +130,7 @@ async function handleStartFocusSession(data: any = {}) {
 }
 
 function handleOpenSearch() {
-  // Send message to popup to switch to library tab
-  chrome.runtime.sendMessage({ type: 'SWITCH_TAB', tab: 'library' });
+  chrome.runtime.sendMessage({ type: 'SWITCH_TAB', tab: 'library', focusSearch: true });
 }
 
 function handleOpenUpgradeModal() {

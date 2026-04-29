@@ -7,10 +7,10 @@ import RecentItems from './RecentItems';
 import { BOOKMARKS_STORAGE_KEY, DAILY_STATS_STORAGE_KEY } from '@/lib/storageKeys';
 import {
   getBookmarks,
-  getSourceDomain,
   markBookmarkOpened,
   markBookmarkResurfaced,
 } from '@/services/localBookmarks';
+import { getRecoveryCandidates } from '@/services/bookmarkRecovery';
 import { getDailyStats } from '@/services/localStats';
 import MCPService from '@/services/MCPService';
 import { SmartBookmark } from '@/types/bookmark';
@@ -55,96 +55,51 @@ const HomeTab: React.FC<HomeTabProps> = ({ onNavigate }) => {
     });
   }, []);
 
-  const getBookmarkContext = (bookmark: SmartBookmark) => (
-    bookmark.whySaved ||
-    bookmark.nextAction ||
-    bookmark.note ||
-    bookmark.notes ||
-    bookmark.description ||
-    'Saved for later context recovery.'
+  const getBookmarkWhy = (bookmark: SmartBookmark) => (
+    bookmark.whySaved?.trim() ||
+    bookmark.note?.trim() ||
+    bookmark.notes?.trim() ||
+    bookmark.description?.trim() ||
+    (bookmark.sourceDomain ? `Saved from ${bookmark.sourceDomain}.` : 'Saved for later context recovery.')
+  );
+
+  const getBookmarkNext = (bookmark: SmartBookmark) => (
+    bookmark.nextAction?.trim() || 'Open the page and choose one small next step.'
   );
 
   const loadContextCards = useCallback(async () => {
     const bookmarks = await getBookmarks();
-    const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const currentUrl = currentTab?.url || '';
-    const currentDomain = currentUrl ? getSourceDomain(currentUrl) : '';
-    const cards: ContextCard[] = [];
-    const usedBookmarkIds = new Set<string>();
+    const cards: ContextCard[] = getRecoveryCandidates(bookmarks, 3).map(({ bookmark, reason }) => {
+      const hasNextAction = Boolean(bookmark.nextAction?.trim());
+      const domain = bookmark.sourceDomain || '';
 
-    const addBookmarkCard = (
-      bookmark: SmartBookmark,
-      card: Omit<ContextCard, 'id'>
-    ) => {
-      if (usedBookmarkIds.has(bookmark.id)) {
-        return;
-      }
-
-      usedBookmarkIds.add(bookmark.id);
-      cards.push({
-        ...card,
-        id: `${card.type}-${bookmark.id}`,
-      });
-    };
-
-    bookmarks
-      .filter((bookmark) => currentDomain && bookmark.sourceDomain === currentDomain && bookmark.url !== currentUrl)
-      .slice(0, 1)
-      .forEach((bookmark) => addBookmarkCard(bookmark, {
-        type: 'insight',
-        title: `You saved something else from ${bookmark.sourceDomain}`,
-        description: getBookmarkContext(bookmark),
-        icon: '↩',
-        priority: 'medium',
-        action: {
-          label: bookmark.nextAction ? 'Start focus' : 'Open',
-          handler: () => bookmark.nextAction ? startFocusFromBookmark(bookmark) : openBookmark(bookmark),
-        },
-        secondaryAction: bookmark.nextAction ? {
-          label: 'Open',
-          handler: () => openBookmark(bookmark),
-        } : undefined,
-      }));
-
-    bookmarks
-      .filter((bookmark) => Boolean(bookmark.nextAction))
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      .slice(0, 2)
-      .forEach((bookmark) => addBookmarkCard(bookmark, {
-        type: 'task',
+      return {
+        id: `recovery-${bookmark.id}`,
+        type: hasNextAction ? 'task' : 'reminder',
         title: bookmark.title,
-        description: `Next: ${bookmark.nextAction}`,
-        icon: '→',
-        priority: 'high',
+        description: [reason, domain].filter(Boolean).join(' · '),
+        detailRows: [
+          {
+            label: 'Why',
+            value: getBookmarkWhy(bookmark),
+          },
+          {
+            label: 'Next',
+            value: getBookmarkNext(bookmark),
+          },
+        ],
+        icon: hasNextAction ? '→' : '↺',
+        priority: hasNextAction ? 'high' : 'medium',
         action: {
-          label: 'Start focus',
-          handler: () => startFocusFromBookmark(bookmark),
+          label: hasNextAction ? 'Resume' : 'Open URL',
+          handler: () => hasNextAction ? startFocusFromBookmark(bookmark) : openBookmark(bookmark),
         },
-        secondaryAction: {
-          label: 'Open',
-          handler: () => openBookmark(bookmark),
-        },
-      }));
-
-    bookmarks
-      .filter((bookmark) => !bookmark.lastOpenedAt)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 2)
-      .forEach((bookmark) => addBookmarkCard(bookmark, {
-        type: 'reminder',
-        title: `Return to: ${bookmark.title}`,
-        description: getBookmarkContext(bookmark),
-        icon: '↺',
-        priority: 'low',
-        action: {
-          label: bookmark.nextAction ? 'Start focus' : 'Reopen',
-          handler: () => bookmark.nextAction ? startFocusFromBookmark(bookmark) : openBookmark(bookmark),
-        },
-        secondaryAction: bookmark.nextAction ? {
-          label: 'Open',
+        secondaryAction: hasNextAction ? {
+          label: 'Open URL',
           handler: () => openBookmark(bookmark),
         } : undefined,
-      }));
+      };
+    });
 
     setContextCards(cards);
   }, [openBookmark, startFocusFromBookmark]);
