@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import { Note, CalendarEvent } from './NotesTab';
 
 interface CalendarViewProps {
@@ -134,8 +135,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         <button
           className="nav-button"
           onClick={() => navigateMonth('prev')}
+          aria-label="Previous month"
         >
-          ‹
+          <AppIcon name="chevron-right" size={16} className="nav-icon previous" />
         </button>
         <h3 className="month-year">
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
@@ -143,8 +145,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         <button
           className="nav-button"
           onClick={() => navigateMonth('next')}
+          aria-label="Next month"
         >
-          ›
+          <AppIcon name="chevron-right" size={16} />
         </button>
       </div>
 
@@ -178,10 +181,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 {hasActivity && (
                   <div className="day-indicators">
                     {dayEvents.length > 0 && (
-                      <span className="event-indicator">{dayEvents.length}📅</span>
+                      <span className="event-indicator">
+                        <AppIcon name="calendar" size={10} />
+                        {dayEvents.length}
+                      </span>
                     )}
                     {dayNotes.length > 0 && (
-                      <span className="note-indicator">{dayNotes.length}📝</span>
+                      <span className="note-indicator">
+                        <AppIcon name="file" size={10} />
+                        {dayNotes.length}
+                      </span>
                     )}
                   </div>
                 )}
@@ -205,13 +214,15 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 className="action-button"
                 onClick={() => setShowEventForm(!showEventForm)}
               >
-                📅 Add Event
+                <AppIcon className="button-icon" name="calendar" size={14} />
+                <span>Add Event</span>
               </button>
               <button
                 className="action-button"
                 onClick={() => createNoteForDate(selectedDate)}
               >
-                📝 Add Note
+                <AppIcon className="button-icon" name="file" size={14} />
+                <span>Add Note</span>
               </button>
             </div>
           </div>
@@ -270,7 +281,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
             {getNotesForDate(selectedDate).map(note => (
               <div key={note.id} className="day-note">
-                <span className="note-icon">📝</span>
+                <AppIcon className="note-icon" name="file" size={18} />
                 <div className="note-preview">
                   <span className="note-title">{note.title}</span>
                   <span className="note-preview-text">

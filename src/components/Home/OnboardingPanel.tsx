@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import { SMART_BOOKMARKS_ONBOARDING_STORAGE_KEY } from '@/lib/storageKeys';
 import {
   OnboardingState,
@@ -139,7 +140,7 @@ const OnboardingPanel: React.FC<OnboardingPanelProps> = ({
         {checklist.map((item) => (
           <li key={item.key} className={state[item.key] ? 'done' : ''}>
             <span className="onboarding-check" aria-hidden="true">
-              {state[item.key] ? '✓' : ''}
+              {state[item.key] ? <AppIcon name="check" size={12} /> : null}
             </span>
             <span>{item.label}</span>
           </li>

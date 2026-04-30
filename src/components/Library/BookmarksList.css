@@ -19,9 +19,9 @@
 }
 
 .empty-bookmarks .empty-icon {
-  font-size: 48px;
   margin-bottom: var(--spacing-lg);
   opacity: 0.5;
+  color: var(--text-tertiary);
 }
 
 .empty-bookmarks h3 {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import { Bookmark } from './LibraryTab';
 import { markBookmarkOpened } from '@/services/localBookmarks';
 import { EnergyLevel } from '@/types/bookmark';
@@ -203,21 +204,21 @@ const BookmarkItem: React.FC<BookmarkItemProps> = ({
           onClick={onStartFocus}
           aria-label="Start focus session for bookmark"
         >
-          ⏱️
+          <AppIcon name="timer" size={15} />
         </button>
         <button
           className="action-button"
           onClick={onEditStart}
           aria-label="Edit bookmark"
         >
-          ✏️
+          <AppIcon name="pencil" size={15} />
         </button>
         <button
           className="action-button delete"
           onClick={onDelete}
           aria-label="Delete bookmark"
         >
-          🗑️
+          <AppIcon name="trash" size={15} />
         </button>
       </div>
     </div>

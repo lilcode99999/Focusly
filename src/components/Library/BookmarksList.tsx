@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AppIcon, { AppIconName } from '@/components/common/AppIcon';
 import { Bookmark } from './LibraryTab';
 import BookmarkItem from './BookmarkItem';
 import './BookmarksList.css';
@@ -9,7 +10,7 @@ interface BookmarksListProps {
   onEdit: (id: string, updates: Partial<Bookmark>) => void;
   onStartFocus: (bookmark: Bookmark) => void;
   emptyState?: {
-    icon?: string;
+    icon?: AppIconName;
     title: string;
     description: string;
     actionLabel?: string;
@@ -29,7 +30,7 @@ const BookmarksList: React.FC<BookmarksListProps> = ({
   if (bookmarks.length === 0) {
     return (
       <div className="empty-bookmarks">
-        <div className="empty-icon">{emptyState?.icon || '📚'}</div>
+        <AppIcon className="empty-icon" name={emptyState?.icon || 'book'} size={48} />
         <h3>{emptyState?.title || 'No bookmarks found'}</h3>
         <p>{emptyState?.description || 'Save your first bookmark to get started.'}</p>
         {emptyState?.actionLabel && emptyState.onAction && (

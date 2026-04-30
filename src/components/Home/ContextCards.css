@@ -60,7 +60,6 @@
   border: none;
   background: transparent;
   color: #94a3b8;
-  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   opacity: 0;
@@ -85,9 +84,10 @@
 }
 
 .card-icon {
-  font-size: 20px;
-  line-height: 1;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 .card-content {
@@ -200,9 +200,9 @@
 }
 
 .context-cards-empty .empty-icon {
-  font-size: 32px;
   display: block;
   margin-bottom: 12px;
+  color: var(--text-tertiary);
 }
 
 .context-cards-empty p {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AppIcon, { AppIconName } from '@/components/common/AppIcon';
 import { Note } from './NotesTab';
 
 interface SearchInterfaceProps {
@@ -83,13 +84,13 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
     );
   };
 
-  const getMoodEmoji = (mood?: Note['mood']): string => {
+  const getMoodIcon = (mood?: Note['mood']): AppIconName => {
     switch (mood) {
-      case 'energized': return '⚡';
-      case 'focused': return '🎯';
-      case 'scattered': return '🌪️';
-      case 'reflective': return '🤔';
-      default: return '💭';
+      case 'energized': return 'zap';
+      case 'focused': return 'target';
+      case 'scattered': return 'wind';
+      case 'reflective': return 'lightbulb';
+      default: return 'message';
     }
   };
 
@@ -118,8 +119,9 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
             className="clear-search-button"
             onClick={() => onSearchChange('')}
             disabled={!searchQuery}
+            aria-label="Clear search"
           >
-            ❌
+            <AppIcon name="x" size={14} />
           </button>
         </div>
 
@@ -128,7 +130,8 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
             className="toggle-filters-button"
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
           >
-            🔧 {showAdvancedFilters ? 'Hide' : 'Show'} Filters
+            <AppIcon className="button-icon" name="sliders" size={14} />
+            <span>{showAdvancedFilters ? 'Hide' : 'Show'} Filters</span>
           </button>
 
           <div className="sort-controls">
@@ -163,10 +166,10 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
               className="filter-select"
             >
               <option value="all">All Moods</option>
-              <option value="energized">⚡ Energized</option>
-              <option value="focused">🎯 Focused</option>
-              <option value="scattered">🌪️ Scattered</option>
-              <option value="reflective">🤔 Reflective</option>
+              <option value="energized">Energized</option>
+              <option value="focused">Focused</option>
+              <option value="scattered">Scattered</option>
+              <option value="reflective">Reflective</option>
             </select>
           </div>
 
@@ -178,10 +181,10 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
               className="filter-select"
             >
               <option value="all">All Urgency</option>
-              <option value="now">🔴 Now</option>
-              <option value="today">🟡 Today</option>
-              <option value="week">🔵 This Week</option>
-              <option value="someday">⚪ Someday</option>
+              <option value="now">Now</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="someday">Someday</option>
             </select>
           </div>
 
@@ -220,7 +223,7 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
 
         {sortedNotes.length === 0 ? (
           <div className="no-results">
-            <span className="no-results-icon">🔍</span>
+            <AppIcon className="no-results-icon" name="search" size={48} />
             <p>No notes match your search criteria</p>
             <button onClick={clearAllFilters} className="clear-filters-suggestion">
               Clear filters to see all notes
@@ -232,7 +235,7 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
               <div key={note.id} className="search-result-note">
                 <div className="note-header">
                   <div className="note-meta">
-                    <span className="note-mood">{getMoodEmoji(note.mood)}</span>
+                    <AppIcon className="note-mood" name={getMoodIcon(note.mood)} size={16} />
                     <span className="note-title">
                       {highlightSearchTerm(note.title, searchQuery)}
                     </span>
@@ -251,8 +254,9 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
                       className="action-button delete-button"
                       onClick={() => onNoteDelete(note.id)}
                       title="Delete note"
+                      aria-label="Delete note"
                     >
-                      🗑️
+                      <AppIcon name="trash" size={14} />
                     </button>
                   </div>
                 </div>

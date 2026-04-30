@@ -6,6 +6,7 @@ import FocusTab from '@/components/Focus/FocusTab';
 import LibraryTab from '@/components/Library/LibraryTab';
 import InsightsTab from '@/components/Insights/InsightsTab';
 import NotesTab from '@/components/Notes/NotesTab';
+import AppIcon from '@/components/common/AppIcon';
 import { markOnboardingStep } from '@/services/localOnboarding';
 
 export type Tab = 'home' | 'focus' | 'library' | 'notes' | 'insights';
@@ -68,8 +69,9 @@ const App: React.FC = () => {
           className="settings-button"
           onClick={openSettings}
           title="Open Settings"
+          aria-label="Open Settings"
         >
-          ⚙️
+          <AppIcon name="settings" size={18} />
         </button>
       </div>
 

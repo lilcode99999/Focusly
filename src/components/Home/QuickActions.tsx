@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import { saveBookmark } from '@/services/localBookmarks';
 import { markOnboardingStep } from '@/services/localOnboarding';
 import { EnergyLevel } from '@/types/bookmark';
@@ -109,15 +110,15 @@ const QuickActions: React.FC<QuickActionsProps> = ({ openSaveComposerSignal = 0 
       <h3 className="section-title">Quick Actions</h3>
       <div className="action-buttons">
         <button className="action-button primary" onClick={handlePrepareBookmark}>
-          <span className="action-icon">💾</span>
+          <AppIcon className="action-icon" name="bookmark-plus" size={18} />
           <span className="action-label">Save Current Tab</span>
         </button>
         <button className="action-button" onClick={handleStartFocus}>
-          <span className="action-icon">🎯</span>
+          <AppIcon className="action-icon" name="target" size={18} />
           <span className="action-label">Start Focus</span>
         </button>
         <button className="action-button" onClick={handleQuickSearch}>
-          <span className="action-icon">🔍</span>
+          <AppIcon className="action-icon" name="search" size={18} />
           <span className="action-label">Search Library</span>
         </button>
       </div>

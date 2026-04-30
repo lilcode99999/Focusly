@@ -1,4 +1,5 @@
 import React from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import './Analytics.css';
 
 interface AnalyticsProps {
@@ -74,21 +75,21 @@ const Analytics: React.FC<AnalyticsProps> = ({ data }) => {
         <h3>Focus Patterns</h3>
         <div className="time-distribution">
           <div className="time-slot">
-            <div className="time-icon">🌅</div>
+            <AppIcon className="time-icon" name="sunrise" size={22} />
             <div className="time-info">
               <div className="time-period">Morning</div>
               <div className="time-minutes">{data.focusPatterns.morningMinutes} min</div>
             </div>
           </div>
           <div className="time-slot">
-            <div className="time-icon">☀️</div>
+            <AppIcon className="time-icon" name="sun" size={22} />
             <div className="time-info">
               <div className="time-period">Afternoon</div>
               <div className="time-minutes">{data.focusPatterns.afternoonMinutes} min</div>
             </div>
           </div>
           <div className="time-slot">
-            <div className="time-icon">🌙</div>
+            <AppIcon className="time-icon" name="moon" size={22} />
             <div className="time-info">
               <div className="time-period">Evening</div>
               <div className="time-minutes">{data.focusPatterns.eveningMinutes} min</div>
