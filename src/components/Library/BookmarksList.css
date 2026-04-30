@@ -34,4 +34,22 @@
 .empty-bookmarks p {
   font-size: var(--font-size-sm);
   margin: 0;
+  line-height: 1.4;
+}
+
+.empty-action {
+  margin-top: var(--spacing-md);
+  padding: 7px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  background: var(--surface-bg);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.empty-action:hover {
+  border-color: var(--accent-color);
+  background: var(--secondary-bg);
 }

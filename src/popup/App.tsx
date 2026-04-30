@@ -18,8 +18,15 @@ const isPopupTab = (tab: unknown): tab is Tab => (
   tab === 'insights'
 );
 
+interface PopupRuntimeMessage {
+  type?: string;
+  tab?: unknown;
+  focusSearch?: unknown;
+}
+
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
+  const [librarySearchFocusSignal, setLibrarySearchFocusSignal] = useState(0);
 
   const handleTabChange = useCallback((tab: Tab) => {
     setActiveTab(tab);
@@ -29,9 +36,12 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const handleRuntimeMessage = (message: { type?: string; tab?: unknown }) => {
+    const handleRuntimeMessage = (message: PopupRuntimeMessage) => {
       if (message.type === 'SWITCH_TAB' && isPopupTab(message.tab)) {
         handleTabChange(message.tab);
+        if (message.tab === 'library' && message.focusSearch === true) {
+          setLibrarySearchFocusSignal((current) => current + 1);
+        }
       }
 
       if (message.type === 'START_FOCUS' || message.type === 'START_FOCUS_SESSION') {
@@ -73,7 +83,7 @@ const App: React.FC = () => {
         </TabPanel>
 
         <TabPanel isActive={activeTab === 'library'}>
-          <LibraryTab />
+          <LibraryTab focusSearchSignal={librarySearchFocusSignal} />
         </TabPanel>
 
         <TabPanel isActive={activeTab === 'notes'}>

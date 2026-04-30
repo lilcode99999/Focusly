@@ -6,6 +6,10 @@ export interface ContextCard {
   type: 'suggestion' | 'reminder' | 'insight' | 'task' | 'event';
   title: string;
   description?: string;
+  detailRows?: {
+    label: string;
+    value: string;
+  }[];
   action?: {
     label: string;
     handler: () => void;
@@ -109,6 +113,16 @@ const ContextCards: React.FC<ContextCardsProps> = ({ cards, onCardAction, onDism
               <h4 className="card-title">{card.title}</h4>
               {card.description && (
                 <p className="card-description">{card.description}</p>
+              )}
+              {card.detailRows && card.detailRows.length > 0 && (
+                <dl className="card-details">
+                  {card.detailRows.map((row) => (
+                    <div key={row.label} className="card-detail-row">
+                      <dt>{row.label}</dt>
+                      <dd>{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               )}
             </div>
             {card.timestamp && (
