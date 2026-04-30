@@ -149,14 +149,15 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
   transition: var(--transition-fast);
   flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 .settings-button:hover {
   background: var(--secondary-bg);
   box-shadow: var(--shadow-subtle);
+  color: var(--text-primary);
 }
 
 .settings-button:active {

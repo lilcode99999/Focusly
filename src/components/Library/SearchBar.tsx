@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import './SearchBar.css';
 
 interface SearchBarProps {
@@ -25,7 +26,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <div className="search-bar-container">
       <div className="search-bar">
-        <span className="search-icon">🔍</span>
+        <AppIcon className="search-icon" name="search" size={16} />
         <input
           ref={inputRef}
           type="text"
@@ -40,7 +41,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             onClick={() => onChange('')}
             aria-label="Clear search"
           >
-            ×
+            <AppIcon name="x" size={14} />
           </button>
         )}
       </div>

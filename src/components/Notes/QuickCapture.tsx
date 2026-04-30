@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import { Note } from './NotesTab';
 
 interface QuickCaptureProps {
@@ -139,7 +140,7 @@ const QuickCapture: React.FC<QuickCaptureProps> = ({ onSave }) => {
     return (
       <div className="quick-capture-closed">
         <button className="quick-capture-button" onClick={handleStartCapture}>
-          <span className="capture-icon">✏️</span>
+          <AppIcon className="capture-icon" name="pencil" size={18} />
           <span className="capture-text">Quick Note</span>
           <span className="capture-hint">Capture a thought instantly</span>
         </button>
@@ -157,7 +158,12 @@ const QuickCapture: React.FC<QuickCaptureProps> = ({ onSave }) => {
             onClick={handleSave}
             disabled={!content.trim() || isLoading}
           >
-            {isLoading ? '⏳' : '💾'} Save
+            <AppIcon
+              className={isLoading ? 'button-icon spin-icon' : 'button-icon'}
+              name={isLoading ? 'loader' : 'save'}
+              size={14}
+            />
+            <span>Save</span>
           </button>
           <button
             className="action-button cancel-button"
@@ -166,7 +172,8 @@ const QuickCapture: React.FC<QuickCaptureProps> = ({ onSave }) => {
               setContent('');
             }}
           >
-            ❌ Cancel
+            <AppIcon className="button-icon" name="x" size={14} />
+            <span>Cancel</span>
           </button>
         </div>
       </div>

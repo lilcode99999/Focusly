@@ -144,11 +144,11 @@ const LibraryTab: React.FC<LibraryTabProps> = ({ focusSearchSignal = 0 }) => {
           onEdit={handleEditBookmark}
           onStartFocus={handleStartFocus}
           emptyState={bookmarks.length === 0 ? {
-            icon: '📚',
+            icon: 'book',
             title: 'No saved contexts yet',
             description: 'Save a page with why it matters and the next step. Future you gets a clean place to restart.',
           } : hasActiveRecoveryFilter ? {
-            icon: '🔎',
+            icon: 'search',
             title: 'No matching context yet',
             description: 'Try a next action, why you saved it, a tag, mood, energy level, or domain.',
             actionLabel: 'Clear search',

@@ -39,7 +39,8 @@
 }
 
 .toggle-icon {
-  font-size: var(--font-size-xs);
+  width: 14px;
+  height: 14px;
   color: var(--text-secondary);
 }
 
@@ -70,8 +71,10 @@
 }
 
 .session-type {
-  font-size: 16px;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
 }
 
 .session-time {
@@ -86,9 +89,10 @@
 }
 
 .session-status {
-  font-size: var(--font-size-sm);
   font-weight: 600;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .session-status.completed {

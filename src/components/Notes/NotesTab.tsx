@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import QuickCapture from './QuickCapture';
 import NotesTimeline from './NotesTimeline';
 import CalendarView from './CalendarView';
@@ -159,19 +160,22 @@ const NotesTab: React.FC = () => {
             className={`view-button ${view === 'timeline' ? 'active' : ''}`}
             onClick={() => setView('timeline')}
           >
-            📝 Timeline
+            <AppIcon className="view-icon" name="file" size={15} />
+            <span>Timeline</span>
           </button>
           <button
             className={`view-button ${view === 'calendar' ? 'active' : ''}`}
             onClick={() => setView('calendar')}
           >
-            📅 Calendar
+            <AppIcon className="view-icon" name="calendar" size={15} />
+            <span>Calendar</span>
           </button>
           <button
             className={`view-button ${view === 'search' ? 'active' : ''}`}
             onClick={() => setView('search')}
           >
-            🔍 Search
+            <AppIcon className="view-icon" name="search" size={15} />
+            <span>Search</span>
           </button>
         </div>
       </div>

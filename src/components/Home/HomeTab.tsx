@@ -88,7 +88,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ onNavigate }) => {
             value: getBookmarkNext(bookmark),
           },
         ],
-        icon: hasNextAction ? '→' : '↺',
+        icon: hasNextAction ? 'arrow-right' : 'refresh',
         priority: hasNextAction ? 'high' : 'medium',
         action: {
           label: hasNextAction ? 'Resume' : 'Open URL',
@@ -148,7 +148,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ onNavigate }) => {
         type: 'reminder',
         title: 'Something went wrong',
         description: 'Please try again or be more specific',
-        icon: '⚠️',
+        icon: 'alert',
       }]);
     } finally {
       setIsProcessing(false);
@@ -203,9 +203,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ onNavigate }) => {
     setContextCards(prev => [...prev, {
       id: 'success-' + Date.now(),
       type: 'task',
-      title: '✓ Done!',
+      title: 'Done',
       description: getSuccessMessage(intent.type),
-      icon: '✨',
+      icon: 'check-circle',
     }]);
   };
 
