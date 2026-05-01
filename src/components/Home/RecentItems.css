@@ -1,0 +1,68 @@
+.recent-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.recent-items-loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--spacing-xl);
+}
+
+.recent-items .empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  background-color: var(--tertiary-bg);
+  border-radius: var(--radius-medium);
+}
+
+.bookmark-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.recent-items .bookmark-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.recent-items .bookmark-item:hover {
+  background-color: var(--tertiary-bg);
+}
+
+.recent-items .bookmark-favicon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.recent-items .bookmark-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.recent-items .bookmark-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-items .bookmark-url {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

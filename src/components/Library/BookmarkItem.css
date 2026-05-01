@@ -1,0 +1,210 @@
+.bookmarks-list .bookmark-item {
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.bookmarks-list .bookmark-item:hover {
+  box-shadow: var(--shadow-subtle);
+}
+
+.bookmarks-list .bookmark-item.editing {
+  flex-direction: column;
+}
+
+.bookmark-main {
+  flex: 1;
+  display: flex;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  min-width: 0;
+}
+
+.bookmarks-list .bookmark-favicon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: var(--radius-small);
+}
+
+.bookmarks-list .bookmark-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookmarks-list .bookmark-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.bookmarks-list .bookmark-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bookmarks-list .bookmark-context,
+.bookmarks-list .bookmark-next-action {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.bookmarks-list .bookmark-context span,
+.bookmarks-list .bookmark-next-action span {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.bookmarks-list .bookmark-next-action {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--secondary-bg);
+  border-radius: var(--radius-small);
+}
+
+.bookmarks-list .bookmark-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.bookmarks-list .bookmark-url {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmarks-list .bookmark-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.bookmarks-list .bookmark-tag {
+  padding: 2px var(--spacing-sm);
+  background-color: var(--tertiary-bg);
+  border-radius: 12px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.bookmarks-list .bookmark-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: flex-start;
+}
+
+.bookmarks-list .action-button {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.bookmarks-list .action-button:hover {
+  opacity: 1;
+  background: var(--tertiary-bg);
+}
+
+.bookmarks-list .action-button.delete:hover {
+  transform: scale(1.1);
+}
+
+/* Edit mode styles */
+.bookmarks-list .edit-input,
+.bookmarks-list .edit-textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.bookmarks-list .edit-input:focus,
+.bookmarks-list .edit-textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+.bookmarks-list .edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.bookmarks-list .edit-context-row {
+  display: grid;
+  grid-template-columns: 1fr 132px;
+  gap: var(--spacing-sm);
+}
+
+.bookmarks-list .edit-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+}
+
+.bookmarks-list .save-button,
+.bookmarks-list .cancel-button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-small);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bookmarks-list .save-button {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.bookmarks-list .save-button:hover {
+  background-color: var(--accent-hover);
+}
+
+.bookmarks-list .cancel-button {
+  background-color: var(--tertiary-bg);
+  color: var(--text-primary);
+}
+
+.bookmarks-list .cancel-button:hover {
+  background-color: var(--secondary-bg);
+}

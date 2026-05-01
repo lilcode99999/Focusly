@@ -1,0 +1,65 @@
+.timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.timer-circle {
+  position: relative;
+  width: 168px;
+  height: 168px;
+}
+
+.timer-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.timer-track {
+  stroke: var(--border-color);
+}
+
+.timer-progress {
+  stroke: var(--accent-color);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.timer-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timer-time {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.timer-stop-button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--error-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-medium);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.timer-stop-button:hover {
+  background-color: #e6332a;
+  box-shadow: var(--shadow-subtle);
+}

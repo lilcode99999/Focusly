@@ -1,0 +1,68 @@
+.filter-panel {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--tertiary-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.filter-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.clear-filters {
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.clear-filters:hover {
+  opacity: 0.8;
+}
+
+.filter-panel .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.filter-panel .tag-filter {
+  max-width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-panel .tag-filter:hover {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.filter-panel .tag-filter.selected {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.filter-panel .tag-filter.selected:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}

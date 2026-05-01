@@ -4,10 +4,11 @@
   "description": "Chrome extension with AI-powered semantic search for bookmarks",
   "type": "module",
   "scripts": {
-    "build": "npm run build:extension && npm run build:server",
-    "build:extension": "echo 'Extension build complete'",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:extension": "npm run build",
     "build:server": "cd mcp-server && npm install",
-    "dev": "npm run dev:server",
+    "dev:extension": "vite",
     "dev:server": "cd mcp-server && npm run dev",
     "start:server": "cd mcp-server && npm start",
     "install:server": "cd mcp-server && npm install",
@@ -31,11 +32,18 @@
     "@stripe/stripe-js": "^2.2.0",
     "@supabase/supabase-js": "^2.50.4",
     "dotenv": "^16.3.1",
+    "lucide-react": "^1.14.0",
     "stripe": "^14.9.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.246",
     "@types/node": "^20.10.5",
-    "typescript": "^5.3.3"
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "^5.3.3",
+    "vite": "^7.0.6"
   }
 }
