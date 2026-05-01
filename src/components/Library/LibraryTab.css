@@ -25,6 +25,38 @@
   margin: 0;
 }
 
+.library-results-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--primary-bg);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+.library-results-summary span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.library-results-summary button {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent-color);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+}
+
+.library-results-summary button:hover {
+  color: var(--accent-hover);
+}
+
 .loading-state {
   flex: 1;
   display: flex;

@@ -53,8 +53,9 @@
 }
 
 .action-icon {
-  font-size: 18px;
-  line-height: 1;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .action-label {

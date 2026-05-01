@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import BookmarksList from './BookmarksList';
 import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
 import { BOOKMARKS_STORAGE_KEY } from '@/lib/storageKeys';
 import { deleteBookmark, getBookmarks, markBookmarkResurfaced, updateBookmark } from '@/services/localBookmarks';
+import { markOnboardingStep } from '@/services/localOnboarding';
+import { searchBookmarks } from '@/services/bookmarkRecovery';
 import { SmartBookmark } from '@/types/bookmark';
 import './LibraryTab.css';
 
 export type Bookmark = SmartBookmark;
 
-const LibraryTab: React.FC = () => {
+interface LibraryTabProps {
+  focusSearchSignal?: number;
+}
+
+const LibraryTab: React.FC<LibraryTabProps> = ({ focusSearchSignal = 0 }) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [filteredBookmarks, setFilteredBookmarks] = useState<Bookmark[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,9 +34,21 @@ const LibraryTab: React.FC = () => {
     return () => chrome.storage.onChanged.removeListener(handleStorageChange);
   }, []);
 
+  const searchResults = useMemo(() => (
+    searchBookmarks(bookmarks, {
+      query: searchQuery,
+      selectedTags,
+    })
+  ), [bookmarks, searchQuery, selectedTags]);
+
+  const filteredBookmarks = searchResults.bookmarks;
+  const hasActiveRecoveryFilter = Boolean(searchResults.query) || selectedTags.length > 0;
+
   useEffect(() => {
-    filterBookmarks();
-  }, [bookmarks, searchQuery, selectedTags]);
+    if (searchQuery.trim()) {
+      void markOnboardingStep('searchedLibrary');
+    }
+  }, [searchQuery]);
 
   const loadBookmarks = async () => {
     try {
@@ -41,47 +58,6 @@ const LibraryTab: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const filterBookmarks = () => {
-    let filtered = [...bookmarks];
-
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      const searchableText = (bookmark: Bookmark) => [
-        bookmark.title,
-        bookmark.url,
-        bookmark.description,
-        bookmark.note,
-        bookmark.notes,
-        bookmark.whySaved,
-        bookmark.mood,
-        bookmark.energy,
-        bookmark.nextAction,
-        bookmark.sourceTabTitle,
-        bookmark.sourceDomain,
-        ...bookmark.tags,
-      ].filter(Boolean).join(' ').toLowerCase();
-
-      filtered = filtered.filter(
-        (bookmark) => searchableText(bookmark).includes(query)
-      );
-    }
-
-    // Apply tag filter
-    if (selectedTags.length > 0) {
-      filtered = filtered.filter((bookmark) =>
-        selectedTags.every((tag) => bookmark.tags.includes(tag))
-      );
-    }
-
-    // Sort by most recent
-    filtered.sort((a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    setFilteredBookmarks(filtered);
   };
 
   const handleDeleteBookmark = async (id: string) => {
@@ -94,6 +70,7 @@ const LibraryTab: React.FC = () => {
 
   const handleStartFocus = async (bookmark: Bookmark) => {
     await markBookmarkResurfaced(bookmark.id);
+    await markOnboardingStep('startedFocus');
     chrome.runtime.sendMessage({
       type: 'START_FOCUS_SESSION',
       data: {
@@ -104,6 +81,11 @@ const LibraryTab: React.FC = () => {
         sourceDomain: bookmark.sourceDomain,
       },
     });
+  };
+
+  const clearRecoveryFilters = () => {
+    setSearchQuery('');
+    setSelectedTags([]);
   };
 
   // Get all unique tags
@@ -124,7 +106,21 @@ const LibraryTab: React.FC = () => {
         value={searchQuery}
         onChange={setSearchQuery}
         placeholder="Search title, URL, tags, notes, why, mood, energy, or next action..."
+        focusSignal={focusSearchSignal}
       />
+
+      {hasActiveRecoveryFilter && !loading && (
+        <div className="library-results-summary" role="status">
+          <span>
+            {filteredBookmarks.length} {filteredBookmarks.length === 1 ? 'context' : 'contexts'} found
+            {searchResults.query ? ` for "${searchResults.query}"` : ''}
+            {selectedTags.length > 0 ? ` with ${selectedTags.length} ${selectedTags.length === 1 ? 'tag' : 'tags'}` : ''}
+          </span>
+          <button type="button" onClick={clearRecoveryFilters}>
+            Clear
+          </button>
+        </div>
+      )}
 
       <FilterPanel
         allTags={allTags}
@@ -147,6 +143,17 @@ const LibraryTab: React.FC = () => {
           onDelete={handleDeleteBookmark}
           onEdit={handleEditBookmark}
           onStartFocus={handleStartFocus}
+          emptyState={bookmarks.length === 0 ? {
+            icon: 'book',
+            title: 'No saved contexts yet',
+            description: 'Save a page with why it matters and the next step. Future you gets a clean place to restart.',
+          } : hasActiveRecoveryFilter ? {
+            icon: 'search',
+            title: 'No matching context yet',
+            description: 'Try a next action, why you saved it, a tag, mood, energy level, or domain.',
+            actionLabel: 'Clear search',
+            onAction: clearRecoveryFilters,
+          } : undefined}
         />
       )}
     </div>

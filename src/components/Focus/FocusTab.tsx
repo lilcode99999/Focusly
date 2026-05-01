@@ -10,6 +10,7 @@ import {
 } from '@/lib/storageKeys';
 import { clearPendingFocusRequest, getPendingFocusRequest } from '@/services/focusRequests';
 import { incrementDailyStats } from '@/services/localStats';
+import { markOnboardingStep } from '@/services/localOnboarding';
 import { FocusRequest, FocusSession, FocusSessionSummary, FocusSessionType } from '@/types/focus';
 import './FocusTab.css';
 
@@ -42,6 +43,9 @@ const FocusTab: React.FC = () => {
     setCompletionMessage('');
     chrome.storage.local.set({ [CURRENT_FOCUS_SESSION_STORAGE_KEY]: session });
     clearPendingFocusRequest();
+    if (type === 'focus' && request?.bookmarkId) {
+      void markOnboardingStep('startedFocus');
+    }
   }, []);
 
   const startSessionFromRequest = useCallback((request: FocusRequest) => {
@@ -124,6 +128,9 @@ const FocusTab: React.FC = () => {
 
       if (completed && currentSession.type === 'focus') {
         await incrementDailyStats({ focusMinutes: minutes });
+        if (currentSession.bookmarkId) {
+          await markOnboardingStep('completedFocus');
+        }
         const summaryRecord: FocusSessionSummary = {
           id: `${currentSession.id}-summary`,
           sessionId: currentSession.id,

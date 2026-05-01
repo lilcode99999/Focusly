@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AppIcon, { AppIconName } from '@/components/common/AppIcon';
 import { Note, CalendarEvent } from './NotesTab';
 
 interface NotesTimelineProps {
@@ -54,13 +55,13 @@ const NotesTimeline: React.FC<NotesTimelineProps> = ({
     return new Date(timestamp).toLocaleDateString();
   };
 
-  const getMoodEmoji = (mood?: Note['mood']): string => {
+  const getMoodIcon = (mood?: Note['mood']): AppIconName => {
     switch (mood) {
-      case 'energized': return '⚡';
-      case 'focused': return '🎯';
-      case 'scattered': return '🌪️';
-      case 'reflective': return '🤔';
-      default: return '💭';
+      case 'energized': return 'zap';
+      case 'focused': return 'target';
+      case 'scattered': return 'wind';
+      case 'reflective': return 'lightbulb';
+      default: return 'message';
     }
   };
 
@@ -121,7 +122,7 @@ const NotesTimeline: React.FC<NotesTimelineProps> = ({
     return (
       <div className="timeline-empty">
         <div className="empty-state">
-          <span className="empty-icon">📝</span>
+          <AppIcon className="empty-icon" name="file" size={48} />
           <h3>No notes yet</h3>
           <p>Start capturing your thoughts with the quick capture above!</p>
         </div>
@@ -143,7 +144,7 @@ const NotesTimeline: React.FC<NotesTimelineProps> = ({
               <div key={note.id} className={`timeline-note ${note.pinned ? 'pinned' : ''}`}>
                 <div className="note-header">
                   <div className="note-meta">
-                    <span className="note-mood">{getMoodEmoji(note.mood)}</span>
+                    <AppIcon className="note-mood" name={getMoodIcon(note.mood)} size={16} />
                     <span className="note-title">{note.title}</span>
                     {note.urgency && (
                       <span
@@ -160,22 +161,25 @@ const NotesTimeline: React.FC<NotesTimelineProps> = ({
                       className="action-button"
                       onClick={() => createEventFromNote(note)}
                       title="Schedule review"
+                      aria-label="Schedule review"
                     >
-                      📅
+                      <AppIcon name="calendar" size={14} />
                     </button>
                     <button
                       className="action-button"
                       onClick={() => startEditing(note)}
                       title="Edit note"
+                      aria-label="Edit note"
                     >
-                      ✏️
+                      <AppIcon name="pencil" size={14} />
                     </button>
                     <button
                       className="action-button delete-button"
                       onClick={() => onNoteDelete(note.id)}
                       title="Delete note"
+                      aria-label="Delete note"
                     >
-                      🗑️
+                      <AppIcon name="trash" size={14} />
                     </button>
                   </div>
                 </div>

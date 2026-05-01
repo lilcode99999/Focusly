@@ -60,7 +60,6 @@
   border: none;
   background: transparent;
   color: #94a3b8;
-  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   opacity: 0;
@@ -85,9 +84,10 @@
 }
 
 .card-icon {
-  font-size: 20px;
-  line-height: 1;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 .card-content {
@@ -109,6 +109,34 @@
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 0;
+}
+
+.card-detail-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+.card-detail-row dt {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.card-detail-row dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  line-height: 1.35;
   overflow-wrap: anywhere;
 }
 
@@ -172,9 +200,9 @@
 }
 
 .context-cards-empty .empty-icon {
-  font-size: 32px;
   display: block;
   margin-bottom: 12px;
+  color: var(--text-tertiary);
 }
 
 .context-cards-empty p {
@@ -196,6 +224,14 @@
 
   .card-description {
     color: #94a3b8;
+  }
+
+  .card-detail-row dt {
+    color: #64748b;
+  }
+
+  .card-detail-row dd {
+    color: #e2e8f0;
   }
 
   .card-time {

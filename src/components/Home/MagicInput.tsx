@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import './MagicInput.css';
 
 interface MagicInputProps {
@@ -198,7 +199,7 @@ const MagicInput: React.FC<MagicInputProps> = ({ onIntentDetected }) => {
   return (
     <form onSubmit={handleSubmit} className="magic-input-container">
       <div className={`magic-input-wrapper ${isProcessing ? 'processing' : ''}`}>
-        <span className="magic-input-icon">💭</span>
+        <AppIcon className="magic-input-icon" name="message" size={17} />
         <input
           ref={inputRef}
           type="text"
@@ -216,8 +217,13 @@ const MagicInput: React.FC<MagicInputProps> = ({ onIntentDetected }) => {
             type="submit"
             className="magic-input-submit"
             disabled={isProcessing}
+            aria-label="Submit request"
           >
-            {isProcessing ? '...' : '→'}
+            <AppIcon
+              className={isProcessing ? 'spin-icon' : undefined}
+              name={isProcessing ? 'loader' : 'arrow-right'}
+              size={16}
+            />
           </button>
         )}
       </div>

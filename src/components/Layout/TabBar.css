@@ -41,8 +41,9 @@
 }
 
 .tab-icon {
-  font-size: 17px;
-  line-height: 1;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
 }
 
 .tab-label {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import AppIcon, { AppIconName } from '@/components/common/AppIcon';
 import './ContextCards.css';
 
 export interface ContextCard {
@@ -6,6 +7,10 @@ export interface ContextCard {
   type: 'suggestion' | 'reminder' | 'insight' | 'task' | 'event';
   title: string;
   description?: string;
+  detailRows?: {
+    label: string;
+    value: string;
+  }[];
   action?: {
     label: string;
     handler: () => void;
@@ -47,16 +52,81 @@ const ContextCards: React.FC<ContextCardsProps> = ({ cards, onCardAction, onDism
     });
   };
 
-  const getCardIcon = (card: ContextCard): string => {
-    if (card.icon) return card.icon;
+  const normalizeCardIcon = (icon?: string): AppIconName | undefined => {
+    switch (icon) {
+      case 'alert':
+      case 'arrow-right':
+      case 'bar-chart':
+      case 'bell':
+      case 'book':
+      case 'bookmark-plus':
+      case 'calendar':
+      case 'check':
+      case 'check-circle':
+      case 'circle':
+      case 'clock':
+      case 'coffee':
+      case 'lightbulb':
+      case 'refresh':
+      case 'search':
+      case 'sun':
+      case 'sunrise':
+      case 'tags':
+      case 'target':
+      case 'timer':
+        return icon;
+      case '\u{1F305}':
+        return 'sunrise';
+      case '\u2600\uFE0F':
+        return 'sun';
+      case '\u23F1\uFE0F':
+      case '\u23F0':
+        return 'timer';
+      case '\u2615':
+        return 'coffee';
+      case '\u{1F4A1}':
+        return 'lightbulb';
+      case '\u{1F514}':
+        return 'bell';
+      case '\u{1F4CA}':
+        return 'bar-chart';
+      case '\u2705':
+      case '\u2713':
+      case '\u2728':
+        return 'check-circle';
+      case '\u{1F4C5}':
+        return 'calendar';
+      case '\u26A0\uFE0F':
+      case '\u{1F6AB}':
+        return 'alert';
+      case '\u{1F3F7}\uFE0F':
+        return 'tags';
+      case '\u{1F4DA}':
+        return 'book';
+      case '\u{1F4CC}':
+        return 'bookmark-plus';
+      case '\u2192':
+        return 'arrow-right';
+      case '\u21BA':
+        return 'refresh';
+      case '\u25CE':
+        return 'circle';
+      default:
+        return undefined;
+    }
+  };
+
+  const getCardIcon = (card: ContextCard): AppIconName => {
+    const explicitIcon = normalizeCardIcon(card.icon);
+    if (explicitIcon) return explicitIcon;
 
     switch (card.type) {
-      case 'suggestion': return '💡';
-      case 'reminder': return '🔔';
-      case 'insight': return '📊';
-      case 'task': return '✓';
-      case 'event': return '📅';
-      default: return '📌';
+      case 'suggestion': return 'lightbulb';
+      case 'reminder': return 'bell';
+      case 'insight': return 'bar-chart';
+      case 'task': return 'check';
+      case 'event': return 'calendar';
+      default: return 'bookmark-plus';
     }
   };
 
@@ -81,7 +151,7 @@ const ContextCards: React.FC<ContextCardsProps> = ({ cards, onCardAction, onDism
   if (visibleCards.length === 0) {
     return (
       <div className="context-cards-empty">
-        <span className="empty-icon">✨</span>
+        <AppIcon className="empty-icon" name="book" size={32} />
         <p>Save a page with a reason and this space will help you return to it.</p>
       </div>
     );
@@ -100,15 +170,25 @@ const ContextCards: React.FC<ContextCardsProps> = ({ cards, onCardAction, onDism
             onClick={() => handleDismiss(card.id)}
             aria-label="Dismiss"
           >
-            ×
+            <AppIcon name="x" size={14} />
           </button>
 
           <div className="card-header">
-            <span className="card-icon">{getCardIcon(card)}</span>
+            <AppIcon className="card-icon" name={getCardIcon(card)} size={20} />
             <div className="card-content">
               <h4 className="card-title">{card.title}</h4>
               {card.description && (
                 <p className="card-description">{card.description}</p>
+              )}
+              {card.detailRows && card.detailRows.length > 0 && (
+                <dl className="card-details">
+                  {card.detailRows.map((row) => (
+                    <div key={row.label} className="card-detail-row">
+                      <dt>{row.label}</dt>
+                      <dd>{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               )}
             </div>
             {card.timestamp && (

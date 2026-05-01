@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AppIcon from '@/components/common/AppIcon';
 import { FocusSession } from '@/types/focus';
 import './SessionHistory.css';
 
@@ -41,7 +42,11 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({ sessions }) => {
         <h3 className="history-title">Today's Sessions</h3>
         <div className="history-stats">
           <span className="total-time">{formatDuration(totalFocusTime)} total</span>
-          <span className="toggle-icon">{isExpanded ? '▼' : '▶'}</span>
+          <AppIcon
+            className="toggle-icon"
+            name={isExpanded ? 'chevron-down' : 'chevron-right'}
+            size={14}
+          />
         </div>
       </div>
 
@@ -53,7 +58,7 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({ sessions }) => {
             todaySessions.map((session) => (
               <div key={session.id} className="session-item">
                 <span className={`session-type ${session.type}`}>
-                  {session.type === 'focus' ? '🎯' : '☕'}
+                  <AppIcon name={session.type === 'focus' ? 'target' : 'coffee'} size={16} />
                 </span>
                 <span className="session-time">
                   {formatTime(session.startTime)}
@@ -62,7 +67,7 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({ sessions }) => {
                   {formatDuration(session.duration)}
                 </span>
                 <span className={`session-status ${session.completed ? 'completed' : 'incomplete'}`}>
-                  {session.completed ? '✓' : '×'}
+                  <AppIcon name={session.completed ? 'check' : 'x'} size={14} />
                 </span>
               </div>
             ))
