@@ -5,9 +5,18 @@ import './Analytics.css';
 interface AnalyticsProps {
   data: {
     dailyFocusMinutes: number[];
+    weeklyFocusMinutes: number;
     weeklyBookmarks: number;
+    completedFocusSessions: number;
     productivityScore: number;
     topTags: { tag: string; count: number }[];
+    recentSummaries: {
+      id: string;
+      minutes: number;
+      goal?: string;
+      bookmarkTitle?: string;
+      summary: string;
+    }[];
     focusPatterns: {
       morningMinutes: number;
       afternoonMinutes: number;
@@ -38,10 +47,12 @@ const Analytics: React.FC<AnalyticsProps> = ({ data }) => {
           <div className="card-label">Bookmarks This Week</div>
         </div>
         <div className="summary-card">
-          <div className="card-value">
-            {Math.round(data.dailyFocusMinutes.reduce((a, b) => a + b, 0) / 7)}
-          </div>
-          <div className="card-label">Avg Daily Focus (min)</div>
+          <div className="card-value">{data.weeklyFocusMinutes}</div>
+          <div className="card-label">Focus This Week</div>
+        </div>
+        <div className="summary-card">
+          <div className="card-value">{data.completedFocusSessions}</div>
+          <div className="card-label">Recovered Contexts</div>
         </div>
       </div>
 
@@ -97,6 +108,24 @@ const Analytics: React.FC<AnalyticsProps> = ({ data }) => {
           </div>
         </div>
       </div>
+
+      {data.recentSummaries.length > 0 && (
+        <div className="recaps-section">
+          <h3>Recent Progress</h3>
+          <div className="recap-list">
+            {data.recentSummaries.map((summary) => (
+              <div key={summary.id} className="recap-item">
+                <div className="recap-title">
+                  {summary.goal || summary.bookmarkTitle || 'Completed focus session'}
+                </div>
+                <div className="recap-detail">
+                  {summary.minutes} min · {summary.summary}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Top Tags */}
       {data.topTags.length > 0 && (

@@ -127,7 +127,10 @@ const FocusTab: React.FC = () => {
       });
 
       if (completed && currentSession.type === 'focus') {
-        await incrementDailyStats({ focusMinutes: minutes });
+        await incrementDailyStats({
+          focusMinutes: minutes,
+          tasksCompleted: currentSession.bookmarkId ? 1 : 0,
+        });
         if (currentSession.bookmarkId) {
           await markOnboardingStep('completedFocus');
         }
@@ -158,6 +161,16 @@ const FocusTab: React.FC = () => {
         <p className="focus-subtitle">
           {currentSession?.goal || 'Stay focused with timed work sessions'}
         </p>
+        {currentSession && (currentSession.bookmarkTitle || currentSession.sourceDomain) && (
+          <div className="focus-source" role="status">
+            {currentSession.bookmarkTitle && (
+              <span className="focus-source-title">{currentSession.bookmarkTitle}</span>
+            )}
+            {currentSession.sourceDomain && (
+              <span className="focus-source-domain">{currentSession.sourceDomain}</span>
+            )}
+          </div>
+        )}
       </div>
 
       {completionMessage && (

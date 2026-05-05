@@ -53,7 +53,8 @@ const HomeTab: React.FC<HomeTabProps> = ({ onNavigate }) => {
         sourceDomain: bookmark.sourceDomain,
       },
     });
-  }, []);
+    onNavigate?.('focus');
+  }, [onNavigate]);
 
   const getBookmarkWhy = (bookmark: SmartBookmark) => (
     bookmark.whySaved?.trim() ||

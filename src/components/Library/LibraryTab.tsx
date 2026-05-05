@@ -13,9 +13,10 @@ export type Bookmark = SmartBookmark;
 
 interface LibraryTabProps {
   focusSearchSignal?: number;
+  onFocusStart?: () => void;
 }
 
-const LibraryTab: React.FC<LibraryTabProps> = ({ focusSearchSignal = 0 }) => {
+const LibraryTab: React.FC<LibraryTabProps> = ({ focusSearchSignal = 0, onFocusStart }) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -81,6 +82,7 @@ const LibraryTab: React.FC<LibraryTabProps> = ({ focusSearchSignal = 0 }) => {
         sourceDomain: bookmark.sourceDomain,
       },
     });
+    onFocusStart?.();
   };
 
   const clearRecoveryFilters = () => {

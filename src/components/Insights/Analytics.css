@@ -7,7 +7,7 @@
 /* Summary Cards */
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-sm);
 }
 
@@ -36,6 +36,7 @@
 /* Chart Section */
 .chart-section,
 .patterns-section,
+.recaps-section,
 .tags-section {
   background-color: var(--surface-bg);
   border: 1px solid var(--border-color);
@@ -45,11 +46,41 @@
 
 .chart-section h3,
 .patterns-section h3,
+.recaps-section h3,
 .tags-section h3 {
   font-size: var(--font-size-md);
   font-weight: 600;
   margin: 0 0 var(--spacing-md) 0;
   color: var(--text-primary);
+}
+
+.recap-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.recap-item {
+  padding: var(--spacing-sm);
+  background-color: var(--tertiary-bg);
+  border-radius: var(--radius-small);
+  min-width: 0;
+}
+
+.recap-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.recap-detail {
+  margin-top: 2px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .bar-chart {
