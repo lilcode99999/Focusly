@@ -10,6 +10,82 @@ const requiredPublicAssets = [
   'icon-128.png',
 ];
 
+interface ExtensionManifest {
+  manifest_version?: number;
+  action?: {
+    default_popup?: string;
+    default_icon?: Record<string, string>;
+  };
+  background?: {
+    service_worker?: string;
+  };
+  content_scripts?: {
+    js?: string[];
+    css?: string[];
+  }[];
+  icons?: Record<string, string>;
+  options_page?: string;
+}
+
+const distPath = (...paths: string[]) => resolve(__dirname, 'dist', ...paths);
+
+const readManifest = (): ExtensionManifest => (
+  JSON.parse(fs.readFileSync(distPath('manifest.json'), 'utf8')) as ExtensionManifest
+);
+
+const assertDistFile = (filePath: string, label = filePath) => {
+  if (!filePath || filePath.startsWith('http')) {
+    return;
+  }
+
+  if (!fs.existsSync(distPath(filePath))) {
+    throw new Error(`Missing ${label}: dist/${filePath}`);
+  }
+};
+
+const collectManifestReferences = (manifest: ExtensionManifest): string[] => {
+  const references = [
+    manifest.action?.default_popup,
+    manifest.background?.service_worker,
+    manifest.options_page,
+    ...Object.values(manifest.action?.default_icon || {}),
+    ...Object.values(manifest.icons || {}),
+  ];
+
+  for (const script of manifest.content_scripts || []) {
+    references.push(...(script.js || []), ...(script.css || []));
+  }
+
+  return Array.from(new Set(references.filter((path): path is string => Boolean(path))));
+};
+
+const validateExtensionBundle = () => {
+  assertDistFile('manifest.json');
+  assertDistFile('blocked.html');
+
+  const manifest = readManifest();
+  if (manifest.manifest_version !== 3) {
+    throw new Error('dist/manifest.json must declare Manifest V3');
+  }
+
+  if (!manifest.action?.default_popup) {
+    throw new Error('dist/manifest.json is missing action.default_popup');
+  }
+  if (!manifest.background?.service_worker) {
+    throw new Error('dist/manifest.json is missing background.service_worker');
+  }
+  if (!manifest.options_page) {
+    throw new Error('dist/manifest.json is missing options_page');
+  }
+
+  const references = collectManifestReferences(manifest);
+  for (const reference of references) {
+    assertDistFile(reference, `manifest reference ${reference}`);
+  }
+
+  console.log(`Verified ${references.length} Manifest V3 references in dist/`);
+};
+
 export default defineConfig({
   base: './',
   plugins: [
@@ -47,6 +123,8 @@ export default defineConfig({
         } catch (e) {
           console.log('HTML files not found, skipping move...', e);
         }
+
+        validateExtensionBundle();
       }
     }
   ],
