@@ -200,11 +200,12 @@ const BookmarkItem: React.FC<BookmarkItemProps> = ({
       </div>
       <div className="bookmark-actions">
         <button
-          className="action-button"
+          className="resume-action-button"
           onClick={onStartFocus}
-          aria-label="Start focus session for bookmark"
+          aria-label={`Resume focus for ${bookmark.title}`}
         >
-          <AppIcon name="timer" size={15} />
+          <AppIcon name="target" size={15} />
+          <span>Resume Focus</span>
         </button>
         <button
           className="action-button"

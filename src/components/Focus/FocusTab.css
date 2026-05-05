@@ -25,6 +25,30 @@
   overflow-wrap: anywhere;
 }
 
+.focus-source {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.focus-source-title,
+.focus-source-domain {
+  max-width: 100%;
+  padding: 2px var(--spacing-sm);
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  overflow-wrap: anywhere;
+}
+
+.focus-source-title {
+  color: var(--text-primary);
+}
+
 .completion-message {
   padding: var(--spacing-md);
   background: rgba(52, 199, 89, 0.1);

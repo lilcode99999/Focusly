@@ -85,7 +85,10 @@ const App: React.FC = () => {
         </TabPanel>
 
         <TabPanel isActive={activeTab === 'library'}>
-          <LibraryTab focusSearchSignal={librarySearchFocusSignal} />
+          <LibraryTab
+            focusSearchSignal={librarySearchFocusSignal}
+            onFocusStart={() => handleTabChange('focus')}
+          />
         </TabPanel>
 
         <TabPanel isActive={activeTab === 'notes'}>

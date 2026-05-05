@@ -1,15 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Analytics from './Analytics';
-import { BOOKMARKS_STORAGE_KEY, FOCUS_SESSIONS_STORAGE_KEY } from '@/lib/storageKeys';
+import {
+  BOOKMARKS_STORAGE_KEY,
+  FOCUS_SESSIONS_STORAGE_KEY,
+  FOCUS_SESSION_SUMMARIES_STORAGE_KEY,
+} from '@/lib/storageKeys';
 import { SmartBookmark } from '@/types/bookmark';
-import { FocusSession } from '@/types/focus';
+import { FocusSession, FocusSessionSummary } from '@/types/focus';
 import './InsightsTab.css';
 
 interface InsightsData {
   dailyFocusMinutes: number[];
+  weeklyFocusMinutes: number;
   weeklyBookmarks: number;
+  completedFocusSessions: number;
   productivityScore: number;
   topTags: { tag: string; count: number }[];
+  recentSummaries: FocusSessionSummary[];
   focusPatterns: {
     morningMinutes: number;
     afternoonMinutes: number;
@@ -19,9 +26,12 @@ interface InsightsData {
 
 const emptyInsights: InsightsData = {
   dailyFocusMinutes: [0, 0, 0, 0, 0, 0, 0],
+  weeklyFocusMinutes: 0,
   weeklyBookmarks: 0,
+  completedFocusSessions: 0,
   productivityScore: 0,
   topTags: [],
+  recentSummaries: [],
   focusPatterns: {
     morningMinutes: 0,
     afternoonMinutes: 0,
@@ -45,7 +55,8 @@ const getSessionMinutes = (session: FocusSession) => {
 
 const buildLocalInsights = (
   bookmarks: SmartBookmark[],
-  sessions: FocusSession[]
+  sessions: FocusSession[],
+  summaries: FocusSessionSummary[]
 ): InsightsData => {
   const today = getStartOfDay(new Date());
   const windowStart = new Date(today);
@@ -97,15 +108,24 @@ const buildLocalInsights = (
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 
-  const weeklyFocus = dailyFocusMinutes.reduce((sum, minutes) => sum + minutes, 0);
-  const focusScore = Math.min(70, Math.round((Math.min(weeklyFocus, 150) / 150) * 70));
+  const weeklyFocusMinutes = dailyFocusMinutes.reduce((sum, minutes) => sum + minutes, 0);
+  const completedFocusSessions = sessions.filter((session) =>
+    session.completed && session.type === 'focus' && Boolean(session.bookmarkId)
+  ).length;
+  const focusScore = Math.min(70, Math.round((Math.min(weeklyFocusMinutes, 150) / 150) * 70));
   const captureScore = Math.min(30, Math.round((Math.min(weeklyBookmarks, 6) / 6) * 30));
 
   return {
     dailyFocusMinutes,
+    weeklyFocusMinutes,
     weeklyBookmarks,
+    completedFocusSessions,
     productivityScore: focusScore + captureScore,
     topTags,
+    recentSummaries: summaries
+      .filter((summary) => summary.completed)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 3),
     focusPatterns,
   };
 };
@@ -117,6 +137,7 @@ const InsightsTab: React.FC = () => {
     const result = await chrome.storage.local.get([
       BOOKMARKS_STORAGE_KEY,
       FOCUS_SESSIONS_STORAGE_KEY,
+      FOCUS_SESSION_SUMMARIES_STORAGE_KEY,
     ]);
     const bookmarks = Array.isArray(result[BOOKMARKS_STORAGE_KEY])
       ? result[BOOKMARKS_STORAGE_KEY]
@@ -124,15 +145,22 @@ const InsightsTab: React.FC = () => {
     const sessions = Array.isArray(result[FOCUS_SESSIONS_STORAGE_KEY])
       ? result[FOCUS_SESSIONS_STORAGE_KEY]
       : [];
+    const summaries = Array.isArray(result[FOCUS_SESSION_SUMMARIES_STORAGE_KEY])
+      ? result[FOCUS_SESSION_SUMMARIES_STORAGE_KEY]
+      : [];
 
-    setAnalyticsData(buildLocalInsights(bookmarks, sessions));
+    setAnalyticsData(buildLocalInsights(bookmarks, sessions, summaries));
   }, []);
 
   useEffect(() => {
     loadAnalytics();
 
     const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
-      if (changes[BOOKMARKS_STORAGE_KEY] || changes[FOCUS_SESSIONS_STORAGE_KEY]) {
+      if (
+        changes[BOOKMARKS_STORAGE_KEY] ||
+        changes[FOCUS_SESSIONS_STORAGE_KEY] ||
+        changes[FOCUS_SESSION_SUMMARIES_STORAGE_KEY]
+      ) {
         loadAnalytics();
       }
     };

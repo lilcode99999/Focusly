@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import AppIcon from '@/components/common/AppIcon';
-import { saveBookmark } from '@/services/localBookmarks';
+import { getBookmarks, getSourceDomain, saveBookmark } from '@/services/localBookmarks';
 import { markOnboardingStep } from '@/services/localOnboarding';
 import { EnergyLevel } from '@/types/bookmark';
 import './QuickActions.css';
@@ -14,6 +14,7 @@ interface SaveDraft {
   note: string;
   mood: string;
   energy: '' | EnergyLevel;
+  sourceDomain: string;
 }
 
 interface QuickActionsProps {
@@ -27,19 +28,23 @@ const QuickActions: React.FC<QuickActionsProps> = ({ openSaveComposerSignal = 0 
   const handlePrepareBookmark = useCallback(async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab.url && tab.title) {
-      const domain = new URL(tab.url).hostname.replace(/^www\./, '');
+      const sourceDomain = getSourceDomain(tab.url);
+      const existingBookmark = (await getBookmarks()).find((bookmark) => bookmark.url === tab.url);
 
       setSaveDraft({
-        title: tab.title,
+        title: existingBookmark?.title || tab.title,
         url: tab.url,
-        whySaved: '',
-        nextAction: '',
-        tags: domain ? domain.split('.').slice(0, 1).join('') : '',
-        note: '',
-        mood: '',
-        energy: '',
+        whySaved: existingBookmark?.whySaved || '',
+        nextAction: existingBookmark?.nextAction || '',
+        tags: existingBookmark?.tags.length
+          ? existingBookmark.tags.join(', ')
+          : sourceDomain.split('.').slice(0, 1).join(''),
+        note: existingBookmark?.note || existingBookmark?.notes || '',
+        mood: existingBookmark?.mood || '',
+        energy: existingBookmark?.energy || '',
+        sourceDomain,
       });
-      setSaveStatus('');
+      setSaveStatus(existingBookmark ? 'This page is already saved. Update the context when you are ready.' : '');
     }
   }, []);
 
@@ -131,7 +136,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ openSaveComposerSignal = 0 
         <form className="save-context-form" onSubmit={handleSaveBookmark}>
           <div className="save-context-page">
             <span className="save-context-title">{saveDraft.title}</span>
-            <span className="save-context-url">{new URL(saveDraft.url).hostname}</span>
+            <span className="save-context-url">{saveDraft.sourceDomain || saveDraft.url}</span>
           </div>
 
           <label className="context-field">
