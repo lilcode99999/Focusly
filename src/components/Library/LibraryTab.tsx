@@ -44,12 +44,13 @@ const LibraryTab: React.FC<LibraryTabProps> = ({ focusSearchSignal = 0, onFocusS
 
   const filteredBookmarks = searchResults.bookmarks;
   const hasActiveRecoveryFilter = Boolean(searchResults.query) || selectedTags.length > 0;
+  const hasMatchedSearchQuery = Boolean(searchResults.query && filteredBookmarks.length > 0);
 
   useEffect(() => {
-    if (searchQuery.trim()) {
+    if (hasMatchedSearchQuery) {
       void markOnboardingStep('searchedLibrary');
     }
-  }, [searchQuery]);
+  }, [hasMatchedSearchQuery]);
 
   const loadBookmarks = async () => {
     try {

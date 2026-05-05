@@ -5,6 +5,7 @@ import {
   OnboardingState,
   dismissOnboarding,
   getOnboardingState,
+  restoreOnboarding,
 } from '@/services/localOnboarding';
 import './OnboardingPanel.css';
 
@@ -105,11 +106,44 @@ const OnboardingPanel: React.FC<OnboardingPanelProps> = ({
     setState(await dismissOnboarding());
   };
 
-  if (!state || state.dismissed) {
+  const handleRestore = async () => {
+    setState(await restoreOnboarding());
+  };
+
+  if (!state) {
     return null;
   }
 
   const primaryAction = getPrimaryAction(state);
+  const copy = state.completed
+    ? 'You completed the loop once. Keep this nearby when you want to rehearse it again.'
+    : 'Save the reason, find it again, then start with the next action already waiting.';
+
+  if (state.dismissed) {
+    return (
+      <section className="onboarding-panel onboarding-panel-collapsed">
+        <div className="onboarding-header">
+          <div>
+            <p className="onboarding-kicker">
+              {state.completed ? 'Loop complete' : 'Checklist hidden'}
+            </p>
+            <h3>Recovery loop</h3>
+          </div>
+          <span className="onboarding-progress">{progress}/{checklist.length}</span>
+        </div>
+        <div className="onboarding-collapsed-row">
+          <p className="onboarding-copy">
+            {state.completed
+              ? 'Your first context recovery loop is complete.'
+              : 'The checklist is tucked away. You can bring it back anytime.'}
+          </p>
+          <button type="button" className="onboarding-restore" onClick={handleRestore}>
+            Show checklist
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   const handlePrimaryAction = () => {
     if (primaryAction.destination === 'save') {
@@ -133,7 +167,7 @@ const OnboardingPanel: React.FC<OnboardingPanelProps> = ({
       </div>
 
       <p className="onboarding-copy">
-        Save the reason, find it again, then start with the next action already waiting.
+        {copy}
       </p>
 
       <ol className="onboarding-checklist">
@@ -152,7 +186,7 @@ const OnboardingPanel: React.FC<OnboardingPanelProps> = ({
           {primaryAction.label}
         </button>
         <button type="button" className="onboarding-dismiss" onClick={handleDismiss}>
-          Hide for now
+          {state.completed ? 'Done for now' : 'Hide for now'}
         </button>
       </div>
     </section>

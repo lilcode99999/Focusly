@@ -84,3 +84,7 @@ export const markOnboardingStep = async (step: OnboardingStep): Promise<Onboardi
 export const dismissOnboarding = async (): Promise<OnboardingState> => (
   updateOnboardingState({ dismissed: true })
 );
+
+export const restoreOnboarding = async (): Promise<OnboardingState> => (
+  updateOnboardingState({ dismissed: false })
+);
