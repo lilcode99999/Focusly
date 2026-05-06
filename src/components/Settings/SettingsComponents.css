@@ -1,23 +1,23 @@
 /* Settings Components CSS */
 
 :root {
-  --settings-primary: #2f6f64;
-  --settings-primary-hover: #245b52;
-  --settings-success: #2f8f62;
-  --settings-error: #b94444;
-  --settings-warning: #a66b16;
+  --settings-primary: #007aff;
+  --settings-primary-hover: #0051d5;
+  --settings-success: #34c759;
+  --settings-error: #ff3b30;
+  --settings-warning: #ff9500;
 
   /* Neutrals with good contrast */
-  --settings-bg: #f6f7f4;
+  --settings-bg: #ffffff;
   --settings-surface: #ffffff;
-  --settings-surface-hover: #f0f4f1;
-  --settings-border: #dfe5dc;
-  --settings-border-focus: #2f6f64;
+  --settings-surface-hover: #f1f3f4;
+  --settings-border: rgba(0, 0, 0, 0.08);
+  --settings-border-focus: #007aff;
 
   /* Text colors */
-  --settings-text-primary: #1f2b25;
-  --settings-text-secondary: #65756c;
-  --settings-text-muted: #88968d;
+  --settings-text-primary: #1d1d1f;
+  --settings-text-secondary: #86868b;
+  --settings-text-muted: #a1a1a6;
 
   --settings-space-xs: 0.5rem;
   --settings-space-sm: 0.75rem;
@@ -30,8 +30,8 @@
   --settings-radius-sm: 0.375rem;
 
   /* Shadows */
-  --settings-shadow: 0 1px 2px rgba(31, 43, 37, 0.06);
-  --settings-shadow-md: 0 8px 20px rgba(31, 43, 37, 0.08);
+  --settings-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --settings-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
 
   /* Transitions */
   --settings-transition: all 0.15s ease-out;
@@ -40,13 +40,15 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   :root {
-    --settings-bg: #121712;
-    --settings-surface: #1b211c;
-    --settings-surface-hover: #222b24;
-    --settings-border: #303b31;
-    --settings-text-primary: #eef3ed;
-    --settings-text-secondary: #b7c2b9;
-    --settings-text-muted: #7f8a82;
+    --settings-primary: #0a84ff;
+    --settings-primary-hover: #409cff;
+    --settings-bg: #000000;
+    --settings-surface: #1c1c1e;
+    --settings-surface-hover: #2c2c2e;
+    --settings-border: rgba(255, 255, 255, 0.1);
+    --settings-text-primary: #ffffff;
+    --settings-text-secondary: #a1a1a6;
+    --settings-text-muted: #6c6c70;
   }
 }
 
@@ -114,12 +116,12 @@
 }
 
 .settings-card:hover {
-  border-color: rgba(47, 111, 100, 0.24);
+  border-color: var(--settings-primary);
 }
 
 .settings-card--highlight {
   border-color: var(--settings-primary);
-  background: var(--settings-primary-light, rgba(47, 111, 100, 0.08));
+  background: var(--settings-primary-light, rgba(0, 122, 255, 0.12));
 }
 
 /* Settings Item Base */
@@ -135,7 +137,7 @@
 }
 
 .settings-item:hover {
-  background: rgba(47, 111, 100, 0.04);
+  background: var(--settings-surface-hover);
 }
 
 .settings-item:focus-within {
