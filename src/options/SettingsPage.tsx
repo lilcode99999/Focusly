@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '@/context/SettingsContext';
-import { SettingsSection, SettingsCard } from '@/components/Settings/SettingsComponents';
 import GeneralSettings from './sections/GeneralSettings';
 import FocusSettings from './sections/FocusSettings';
 import AISettings from './sections/AISettings';
@@ -8,13 +7,14 @@ import BlockingSettings from './sections/BlockingSettings';
 import PrivacySettings from './sections/PrivacySettings';
 import AccessibilitySettings from './sections/AccessibilitySettings';
 import BackupSettings from './sections/BackupSettings';
+import AppIcon, { AppIconName } from '@/components/common/AppIcon';
 
 type SettingsTab = 'general' | 'focus' | 'ai' | 'blocking' | 'privacy' | 'accessibility' | 'backup';
 
 interface TabInfo {
   id: SettingsTab;
   label: string;
-  icon: string;
+  icon: AppIconName;
   description: string;
 }
 
@@ -22,43 +22,43 @@ const SETTINGS_TABS: TabInfo[] = [
   {
     id: 'general',
     label: 'General',
-    icon: '⚙️',
+    icon: 'settings',
     description: 'Basic app preferences and appearance',
   },
   {
     id: 'focus',
     label: 'Focus & Timer',
-    icon: '⏱️',
+    icon: 'timer',
     description: 'Pomodoro timer and focus session settings',
   },
   {
     id: 'ai',
     label: 'AI Assist',
-    icon: '🤖',
+    icon: 'message',
     description: 'Local context helpers and parked AI routing',
   },
   {
     id: 'blocking',
     label: 'Website Blocking',
-    icon: '🚫',
+    icon: 'alert',
     description: 'Block distracting websites during focus time',
   },
   {
     id: 'privacy',
     label: 'Privacy',
-    icon: '🔒',
+    icon: 'check-circle',
     description: 'Data collection and privacy controls',
   },
   {
     id: 'accessibility',
     label: 'Accessibility',
-    icon: '♿',
+    icon: 'wind',
     description: 'Accessibility and ADHD-friendly options',
   },
   {
     id: 'backup',
     label: 'Backup',
-    icon: '☁️',
+    icon: 'save',
     description: 'Local export and restore settings',
   },
 ];
@@ -121,13 +121,22 @@ const SettingsPage: React.FC = () => {
     <div className="settings-page">
       <header className="settings-header">
         <div className="settings-header-content">
-          <h1 className="settings-title">
-            <span className="settings-title-icon">⚡</span>
-            Smart Bookmarks Settings
-          </h1>
-          <p className="settings-subtitle">
-            Tune your local-first context recovery workspace
-          </p>
+          <div className="settings-title-lockup">
+            <span className="settings-title-icon" aria-hidden="true">
+              <AppIcon name="zap" size={20} />
+            </span>
+            <div>
+              <p className="settings-eyebrow">Extension Settings</p>
+              <h1 className="settings-title">Smart Bookmarks</h1>
+              <p className="settings-subtitle">
+                Tune the local-first context recovery workspace.
+              </p>
+            </div>
+          </div>
+          <div className="settings-header-status" aria-label="Current checkpoint">
+            <span className="settings-status-dot" aria-hidden="true" />
+            Local-first checkpoint
+          </div>
         </div>
       </header>
 
@@ -144,7 +153,9 @@ const SettingsPage: React.FC = () => {
               onClick={() => setActiveTab(tab.id)}
               onKeyDown={(e) => handleKeyDown(e, tab.id)}
             >
-              <span className="settings-nav-icon">{tab.icon}</span>
+              <span className="settings-nav-icon" aria-hidden="true">
+                <AppIcon name={tab.icon} size={17} />
+              </span>
               <div className="settings-nav-content">
                 <span className="settings-nav-label">{tab.label}</span>
                 <span className="settings-nav-description">{tab.description}</span>
@@ -168,7 +179,7 @@ const SettingsPage: React.FC = () => {
       <footer className="settings-footer">
         <div className="settings-footer-content">
           <p className="settings-footer-text">
-            Smart Bookmarks v2.0.0 • Made with ❤️ for neurodivergent minds
+            Smart Bookmarks local-first MVP
           </p>
           <div className="settings-footer-links">
             <span>Local-first MVP checkpoint</span>

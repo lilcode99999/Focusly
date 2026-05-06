@@ -418,7 +418,7 @@ export const SecureInput: React.FC<SecureInputProps> = ({
 
 // Button Group Component
 interface SettingsButtonGroupProps extends BaseSettingProps {
-  options: Array<{ value: string; label: string; icon?: string }>;
+  options: Array<{ value: string; label: string; icon?: React.ReactNode }>;
   value: string;
   onChange: (value: string) => void;
 }
